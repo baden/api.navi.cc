@@ -1,0 +1,32 @@
+#!/bin/bash
+# The logic to start up your application should be put in this
+# script. The application will work only if it binds to
+# $OPENSHIFT_INTERNAL_IP:8080
+# nohup $OPENSHIFT_REPO_DIR/diy/testrubyserver.rb $OPENSHIFT_INTERNAL_IP $OPENSHIFT_REPO_DIR/diy > $OPENSHIFT_HOMEDIR/diy-0.1/logs/server.log 2>&1 &
+
+
+./.hooks/action_hooks/start
+
+
+exit 0
+
+REPO_DIR=~/SDK/newgps.navi.cc/channel.navi.cc
+HOMEDIR=~/SDK/newgps.navi.cc/channel.navi.cc
+
+if [[ ! -e ${REPO_DIR}/misc/bin/python ]]
+then
+  echo "Virtualenv не найден."
+  virtualenv --no-site-packages misc
+fi
+
+
+source ${REPO_DIR}/misc/bin/activate
+${REPO_DIR}/misc/bin/pip install -r ${REPO_DIR}/requirements.txt
+
+export PYTHONPATH="${REPO_DIR}/misc/virtenv/lib/python2.7/site-packages"
+#nohup ${REPO_DIR}/src/test.py > $HOMEDIR/logs/test.log 2>&1 &
+${REPO_DIR}/src/test.py
+deactivate
+
+
+echo "Add some to start hook"

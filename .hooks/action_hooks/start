@@ -1,0 +1,40 @@
+#!/bin/bash
+# The logic to start up your application should be put in this
+# script. The application will work only if it binds to
+# $OPENSHIFT_INTERNAL_IP:8080
+# nohup $OPENSHIFT_REPO_DIR/diy/testrubyserver.rb $OPENSHIFT_INTERNAL_IP $OPENSHIFT_REPO_DIR/diy > $OPENSHIFT_HOMEDIR/diy-0.1/logs/server.log 2>&1 &
+
+#source ${OPENSHIFT_REPO_DIR}/misc/virtenv/bin/activate
+#export PYTHONPATH="${OPENSHIFT_REPO_DIR}/misc/virtenv/lib/python2.7/site-packages"
+#nohup ${OPENSHIFT_REPO_DIR}/diy/test.py > $OPENSHIFT_HOMEDIR/diy-0.1/logs/test.log 2>&1 &
+
+echo "Add some to start hook"
+
+if [[ ! -e ./misc/bin/python ]]
+then
+  echo "Virtualenv не найден. Устанавливаем..."
+  virtualenv --no-site-packages misc
+fi
+
+source ./misc/bin/activate
+./misc/bin/pip install -q -r ./requirements.txt
+deactivate
+
+supervisorctl -c /etc/supervisord.conf restart newgps_api
+
+exit
+
+# Прямой запуск без supervisord
+
+if [[ ! -e ./misc/bin/python ]]
+then
+  echo "Virtualenv не найден. Устанавливаем..."
+  virtualenv --no-site-packages misc
+fi
+
+source ./misc/bin/activate
+./misc/bin/pip install -q -r ./requirements.txt
+
+export PYTHONPATH="./misc/virtenv/lib/python2.7/site-packages"
+nohup ./src/test.py > ./logs/test.log 2>&1 &
+
