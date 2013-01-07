@@ -28,6 +28,20 @@ class BaseHandler(RequestHandler):
         self.set_header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Content-Length')
 
     def post(self, *args, **kwargs):
+        '''
+            AngularJS использует Content-Type: application/json для POST-передачи
+            Этот тип наиболее удобен для передачи массивов,
+            поэтому необходимо использовать его при выборе другого фреймфорка
+        '''
+        if 'Content-Type' in self.request.headers:
+            if "application/json" in self.request.headers['Content-Type']:
+                payload = self.request.body
+                #logging.info('==payload:%s', payload)
+                paydata = json.loads(payload)
+                #logging.info('==paydata:%s', paydata)
+                for k, v in paydata.iteritems():
+                    self.request.arguments[k] = v
+
         self.set_header('Access-Control-Allow-Origin', '*')
         self.set_header('Content-Type', 'application/json; charset=utf-8')
 

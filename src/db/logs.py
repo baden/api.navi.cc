@@ -3,6 +3,8 @@
 #import db
 #print "db:logs:import", repr(db)
 
+import logging
+
 
 class Logs(object):
     def __init__(self, db):
@@ -50,3 +52,13 @@ class Logs(object):
             })  # Информировать всех пользователей, у которых открыта страница Отчеты
         '''
         self.col.insert(log)
+
+    def get_for_skey(self, skey, limit=100):
+        query = self.col.find({'skey': skey}).sort('dt', -1).limit(limit)
+        logging.info("query=%s", dir(query))
+        logs = []
+        for l in query:
+            l["lkey"] = str(l["_id"])
+            del l["_id"]
+            logs.append(l)
+        return logs, query

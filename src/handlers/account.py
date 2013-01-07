@@ -7,6 +7,8 @@ from db.account import Account
 from db.system import System
 import base64
 import json
+import logging
+
 
 #@Route(r"/api/account/new/(?P<domain>[^\/]*)/(?P<user>[^\/]+)/(?P<password>[^\/]+)")
 @Route(r"/api/account/new")
@@ -24,6 +26,7 @@ class AccountNew(BaseHandler):
         else:
             account = self.application.account.create(domain, user, password)
         account = Account.filter(account)
+        account["systems"] = dict([(skey, System.filter(self.application.system.get(skey), domain=domain)) for skey in account["skeys"]])
         info = {
             "result": result,
             "user": user,
@@ -43,11 +46,11 @@ class AccountGet(BaseHandler):
         akey = self.get_argument("akey", "")
         domain = Account.get_domain(akey)
         account = Account.filter(self.application.account.get(akey))
-        systems = {}
+        #systems = {}
         #for skey in account["skeys"]:
         #    systems[skey] = System.filter(self.application.system.get(skey), domain=domain)
-        systems = dict([(skey, System.filter(self.application.system.get(skey), domain=domain)) for skey in account["skeys"]])
-        account["systems"] = systems
+        #systems = dict([(skey, System.filter(self.application.system.get(skey), domain=domain)) for skey in account["skeys"]])
+        account["systems"] = dict([(skey, System.filter(self.application.system.get(skey), domain=domain)) for skey in account["skeys"]])
         info = {
             "akey": akey,  # self.application.account.get(),
             "account": account,
@@ -96,7 +99,7 @@ class AccountNew(BaseHandler):
 
         info = {
             "error": "not impliment",
-            "account": account,
+            #"account": account,
             "system": system
         }
         return info
@@ -116,8 +119,8 @@ class AccountNew(BaseHandler):
         self.application.account.del_system(akey, skey)
 
         info = {
-            "result": "deleted",
-            "account": account
+            "result": "deleted"
+            #"account": account
         }
         return info
 
@@ -126,7 +129,11 @@ class AccountNew(BaseHandler):
 class AccountNew(BaseHandler):
     def apipost(self):
         akey = self.get_argument("akey", "=")
-        skeys = json.loads(self.get_argument("skeys", "[]"))
+        logging.info('==self.request.arguments:%s', repr(self.request.arguments))
+        #skeys = json.loads(self.get_argument("skeys", "[]"))
+        skeys = self.get_arguments("skeys", [])
+        logging.info('==skeys:%s', repr(skeys))
+
         #account = Account.filter(self.application.account.get(akey))
         self.application.account.sort_systems(akey, skeys)
         info = {

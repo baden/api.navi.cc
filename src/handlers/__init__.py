@@ -11,5 +11,6 @@ __all__ = ["bingps", "logs"]
 
 import info
 import account
-#import logs
+import system
+import logs
 #import addlog
