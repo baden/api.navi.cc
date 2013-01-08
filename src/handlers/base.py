@@ -7,6 +7,8 @@ import logging
 import json
 import time
 import sys
+from urlparse import urlparse
+
 
 PROFILER = True
 #PROFILER = False
@@ -45,12 +47,16 @@ class BaseHandler(RequestHandler):
         self.set_header('Access-Control-Allow-Origin', '*')
         self.set_header('Content-Type', 'application/json; charset=utf-8')
 
+        self.domain = urlparse(self.request.headers.get('Origin', '')).netloc
+
         self.write(json.dumps(self.apipost(*args, **kwargs), indent=4))
 
     def get(self, *args, **kwargs):
         self.set_header('Access-Control-Allow-Origin', '*')
         self.set_header('Content-Type', 'application/json; charset=utf-8')
         #self.set_header('Content-Type', 'application/octet-stream')
+
+        self.domain = urlparse(self.request.headers.get('Origin', '')).netloc
 
         callback = self.get_argument('callback', None)
         if PROFILER:

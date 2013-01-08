@@ -13,6 +13,7 @@ import logging
 class SystemChangeDesc(BaseHandler):
     def apiget(self):
         skey = self.get_argument("skey", "=")
+        desc = self.get_argument("desc", "Internal error")
         '''
         # TODO! Добавить проверку на право просмотра
         akey = self.get_argument("akey", "")
@@ -22,12 +23,14 @@ class SystemChangeDesc(BaseHandler):
         self.application.system.get(skey)
         '''
 
-        domain = self.request.host.split(':')[0]
+        #domain = self.request.host.split(':')[0]
+
+        self.application.system.change_desc(skey, desc, domain = self.domain)
 
         info = {
             "result": "not_implemented_yet",
             "skey": skey,
-            "domain": domain,
+            "domain": self.domain,
             "request": {
                 "dir": dir(self.request),
                 "connection": {

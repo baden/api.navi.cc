@@ -7,7 +7,6 @@ import pickle
 from time import time
 import json
 
-
 class System(object):
     def __init__(self, db, redis):
         self.col = db.collection("system")
@@ -91,3 +90,7 @@ class System(object):
             s["skey"] = s["_id"]
             del s["_id"]
         return json.dump(ss, indent=2)
+
+    def change_desc(self, skey, desc, domain=None):
+        self.redis.delete('system.%s' % skey)
+        self.col.update({"_id": skey}, {"$set": {"descbydomain." + domain.replace('.', '_'): desc}}, upsert=True)
