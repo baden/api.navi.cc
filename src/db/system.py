@@ -12,9 +12,6 @@ class System(object):
     def __init__(self, db, redis):
         self.col = db.collection("system")
         # _id используется как ключ skey
-        #self.col.ensure_index([
-        #    ("skey", 1),
-        #])
         self.redis = redis
 
     @staticmethod
