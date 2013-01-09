@@ -45,13 +45,14 @@ class AccountGet(BaseHandler):
         #akey = Account.name_pass_to_akey(user, password)
         akey = self.get_argument("akey", "")
         # TODO! Check for self.domain == domain
-        domain = Account.get_domain(akey)
+        #domain = Account.get_domain(akey)
+        #domain = self.domain
         account = Account.filter(self.application.account.get(akey))
         #systems = {}
         #for skey in account["skeys"]:
-        #    systems[skey] = System.filter(self.application.system.get(skey), domain=domain)
+        #    systems[skey] = System.filter(self.application.system.get(skey), domain=self.domain)
         #systems = dict([(skey, System.filter(self.application.system.get(skey), domain=domain)) for skey in account["skeys"]])
-        account["systems"] = dict([(skey, System.filter(self.application.system.get(skey), domain=domain)) for skey in account["skeys"]])
+        account["systems"] = dict([(skey, System.filter(self.application.system.get(skey), domain=self.domain)) for skey in account["skeys"]])
         info = {
             "akey": akey,  # self.application.account.get(),
             "account": account,
@@ -79,7 +80,8 @@ class AccountNew(BaseHandler):
         akey = self.get_argument("akey", "=")
         imei = self.get_argument("imei", "")
 
-        domain = Account.get_domain(akey)
+        #domain = Account.get_domain(akey)
+        #TODO Check akey for domain
 
         account = Account.filter(self.application.account.get(akey))
 
@@ -90,7 +92,7 @@ class AccountNew(BaseHandler):
                 "result": "already"
             }
 
-        system = System.filter(self.application.system.get(skey), domain=domain)
+        system = System.filter(self.application.system.get(skey), domain=self.domain)
         if system is None:
             return {
                 "result": "notfound"

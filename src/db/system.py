@@ -93,4 +93,4 @@ class System(object):
 
     def change_desc(self, skey, desc, domain=None):
         self.redis.delete('system.%s' % skey)
-        self.col.update({"_id": skey}, {"$set": {"descbydomain." + domain.replace('.', '_'): desc}}, upsert=True)
+        self.col.update({"_id": skey}, {"$set": {"descbydomain." + str(domain): desc}}, upsert=True)
