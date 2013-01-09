@@ -56,7 +56,15 @@ class BaseHandler(RequestHandler):
         self.set_header('Content-Type', 'application/json; charset=utf-8')
         #self.set_header('Content-Type', 'application/octet-stream')
 
-        self.domain = urlparse(self.request.headers.get('Origin', '')).netloc
+        # Для определения
+        domain = self.request.headers.get('Origin', None)
+        if domain is None:
+            domain = self.request.headers.get('Referer', None)
+            if domain is None:
+                domain = self.get_argument("domain", None)
+                if domain is None:
+                    domain = 'default'
+        self.domain = urlparse(domain).netloc.split(':')[0].replace('.', '_').replace('$', '_')
 
         callback = self.get_argument('callback', None)
         if PROFILER:

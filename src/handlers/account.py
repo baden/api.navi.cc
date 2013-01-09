@@ -14,19 +14,19 @@ import logging
 @Route(r"/api/account/new")
 class AccountNew(BaseHandler):
     def apiget(self):
-        domain = self.get_argument("domain", "")
+        #domain = self.get_argument("domain", "")
         user = self.get_argument("user", "u")
         password = self.get_argument("password", "")
 
-        akey = Account.name_pass_to_akey(domain, user, password)
+        akey = Account.name_pass_to_akey(self.domain, user, password)
         account = self.application.account.get(akey)
         result = "created"
         if account is not None:
             result = "already"
         else:
-            account = self.application.account.create(domain, user, password)
+            account = self.application.account.create(self.domain, user, password)
         account = Account.filter(account)
-        account["systems"] = dict([(skey, System.filter(self.application.system.get(skey), domain=domain)) for skey in account["skeys"]])
+        account["systems"] = dict([(skey, System.filter(self.application.system.get(skey), domain=self.domain)) for skey in account["skeys"]])
         info = {
             "result": result,
             "user": user,
@@ -44,6 +44,7 @@ class AccountGet(BaseHandler):
     def apiget(self):
         #akey = Account.name_pass_to_akey(user, password)
         akey = self.get_argument("akey", "")
+        # TODO! Check for self.domain == domain
         domain = Account.get_domain(akey)
         account = Account.filter(self.application.account.get(akey))
         #systems = {}
