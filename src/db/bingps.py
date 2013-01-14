@@ -2,32 +2,35 @@
 # -*- coding: utf-8 -
 
 #from bisect import insort
+from base import DBBase
+import logging
 
 
-class BinGPS(object):
-    def __init__(self, db):
-        self.col = db.collection("bingps")
-        self.col.ensure_index([
+class BinGPS(DBBase):
+    def __init__(self):
+        super(BinGPS, self).__init__()
+        self.collection.ensure_index([
             ("skey", 1), ("hour", 1)
         ])
 
-    def update(self, *args):
-        self.col.update(*args)
+    @classmethod
+    def packer(cls, skey):
+        bingps = cls()
+        bingps.skey = skey
+        bingps.packet = {}
+        return bingps
 
-
-class Packer(object):
-    def __init__(self):
-        self.packet = {}    # Тут будут складываться точки по часам
-
-    def add(self, point):
+    def add_point_to_packer(self, point):
         hour = int(point['time'] // 3600)
         if hour not in self.packet:
             self.packet[hour] = []
         #insort(self.packet[hour].append(point)
         self.packet[hour].append(point)
 
-    def save(self, collection, skey):
+    def save_packer(self):
         # TODO! Batch operations
+        logging.info('BinGPS.save_packer(%s)', self.skey)
         for hour, data in self.packet.iteritems():
             for packet in data:
-                collection.update({'skey': skey, 'hour': hour}, {"$push": {"data": packet}}, True)
+                logging.info('BinGPS.save_packer.update(%s, %s)', self.skey, str(packet))
+                self.collection.update({'skey': self.skey, 'hour': hour}, {"$push": {"data": packet}}, True)

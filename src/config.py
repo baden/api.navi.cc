@@ -14,3 +14,12 @@ PUBLISHER_SUB = "ipc:///tmp/ws_sub"
 
 # Redis URL
 REDIS_SOCKET_PATH = "/tmp/redis.sock"
+REDIS_HOST = None
+REDIS_PORT = None
+REDIS_DB = 0
+
+# Коллекция для логов
+LOG_COLLECTION = 'log'
+
+# Отладочные константы и управление стресс-тестированием
+DISABLE_CACHING = True

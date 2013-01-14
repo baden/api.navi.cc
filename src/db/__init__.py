@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -
+
 __version__ = '0.1'
+
+
+"""
 all = ['bingps']
 
 from pymongo import Connection
@@ -18,3 +22,4 @@ class DB(object):
 
     def collection(self, name):
         return self.db[name]
+"""

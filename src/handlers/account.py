@@ -5,143 +5,140 @@ from route import Route
 from base import BaseHandler
 from db.account import Account
 from db.system import System
-import base64
-import json
+#import base64
+#import json
 import logging
 
 
-#@Route(r"/api/account/new/(?P<domain>[^\/]*)/(?P<user>[^\/]+)/(?P<password>[^\/]+)")
-@Route(r"/api/account/new")
-class AccountNew(BaseHandler):
-    def apiget(self):
-        #domain = self.get_argument("domain", "")
-        user = self.get_argument("user", "u")
-        password = self.get_argument("password", "")
+#@Route(r"/api/account/new")
+@Route(BaseHandler.API_PREFIX + r"/login")
+class AccountLogin(BaseHandler):
+    def post(self):
+        #username = self.request.arguments.get("username")
+        #password = self.request.arguments.get("password")
+        username = self.get_argument("username")
+        password = self.get_argument("password")
 
-        akey = Account.name_pass_to_akey(self.domain, user, password)
-        account = self.application.account.get(akey)
+        # Ключ должен сожержать sefl.identyty
+        #identity = self.create_signed_value('user', 'abc')
+        account = Account.by_name_pass(self.domain, username, password)
+        #logging.info("account=%s", account)
         result = "created"
-        if account is not None:
-            result = "already"
+        if account.isNone:
+            account.create(self.domain, username, password)
         else:
-            account = self.application.account.create(self.domain, user, password)
-        account = Account.filter(account)
-        account["systems"] = dict([(skey, System.filter(self.application.system.get(skey), domain=self.domain)) for skey in account["skeys"]])
-        info = {
+            result = "already"
+
+        access_token = self.create_signed_value('access_token', account.key + '@' + str(self.identity))
+        self.set_secure_cookie("counter", "0")
+        self.set_cookie('access_token', access_token)
+
+        self.writeasjson({
             "result": result,
-            "user": user,
-            "password": password,
-            "akey": akey,  # self.application.account.get(),
-            "account": account,
-            #"akey2": Account.name_pass_to_akey2(user, password),  # self.application.account.get(),
-            #"rakey": base64.urlsafe_b64decode(akey).encode('hex')
-        }
-        return info
+            #"akey": account.key,
+            "access_token": access_token,
+            "account": account.filter(),
+        })
 
 
-@Route(r"/api/account/get")
+@Route(BaseHandler.API_PREFIX + r"/logout")
+class AccountLogout(BaseHandler):
+    def post(self):
+        self.set_cookie('access_token', '')
+        #self.clear_cookie('access_token', '')
+        self.writeasjson({
+            "result": 'logout',
+        })
+
+
+# TODO! Написать wraper для указания необходимости авторизации
+
+
+@Route(BaseHandler.API_PREFIX + r"/account")
 class AccountGet(BaseHandler):
-    def apiget(self):
-        #akey = Account.name_pass_to_akey(user, password)
-        akey = self.get_argument("akey", "")
-        # TODO! Check for self.domain == domain
-        #domain = Account.get_domain(akey)
-        #domain = self.domain
-        account = Account.filter(self.application.account.get(akey))
-        #systems = {}
-        #for skey in account["skeys"]:
-        #    systems[skey] = System.filter(self.application.system.get(skey), domain=self.domain)
-        #systems = dict([(skey, System.filter(self.application.system.get(skey), domain=domain)) for skey in account["skeys"]])
-        account["systems"] = dict([(skey, System.filter(self.application.system.get(skey), domain=self.domain)) for skey in account["skeys"]])
-        info = {
-            "akey": akey,  # self.application.account.get(),
-            "account": account,
-            #"akey2": Account.name_pass_to_akey2(user, password),  # self.application.account.get(),
-            #"rakey": base64.urlsafe_b64decode(akey).encode('hex')
-        }
-        return info
+    @BaseHandler.auth
+    def get(self):
+        self.writeasjson({
+            "account": self.account.filter(),
+        })
 
 
-@Route(r"/api/account/getall/(?P<domain>.*)")
-class AccountGet(BaseHandler):
-    def apiget(self, domain):
-        accounts = self.application.account.getall()
-        info = {
-            "accounts": [Account.filter(a) for a in accounts if a.get("domain", "") == domain],
-            #"akey2": Account.name_pass_to_akey2(user, password),  # self.application.account.get(),
-            #"rakey": base64.urlsafe_b64decode(akey).encode('hex')
-        }
-        return info
+@Route(BaseHandler.API_PREFIX + r"/account/getall/(?P<domain>.*)")
+class AccountGetAll(BaseHandler):
+    def get(self, domain):
+        accounts = Account.getall()
+        self.writeasjson({
+            "accounts": [Account.static_filter(a) for a in accounts if a.get("domain", "") == domain],
+        })
 
 
-@Route(r"/api/account/systems/add")
-class AccountNew(BaseHandler):
-    def apiget(self):
-        akey = self.get_argument("akey", "=")
-        imei = self.get_argument("imei", "")
+@Route(BaseHandler.API_PREFIX + r"/account/systems")
+class AccountSystem(BaseHandler):
+    @BaseHandler.auth
+    def post(self):
+        cmd = self.request.arguments.get("cmd", '')
+        logging.info("AccountSystem.post[{cmd:%s}]", cmd)
 
-        #domain = Account.get_domain(akey)
-        #TODO Check akey for domain
+        if cmd == '':
 
-        account = Account.filter(self.application.account.get(akey))
+            self.writeasjson({
+                "error": "cmd paramenter is required"
+            })
 
-        skey = System.imei_to_key(imei)
+        elif cmd == 'add':
 
-        if skey in account["skeys"]:
-            return {
-                "result": "already"
-            }
+            imeis = self.request.arguments.get("imeis")
+            logging.info(' == imeis=%s', repr(imeis))
 
-        system = System.filter(self.application.system.get(skey), domain=self.domain)
-        if system is None:
-            return {
-                "result": "notfound"
-            }
+            results = []
 
-        self.application.account.add_system(akey, skey)
+            for imei in imeis:
+                skey = System.imei_to_key(imei)
 
-        info = {
-            "error": "not impliment",
-            #"account": account,
-            "system": system
-        }
-        return info
+                if skey in self.account.document["skeys"]:
+                    results.append({
+                        "result": "already"
+                        })
+                else:
+                    system = System.get(skey).filter(domain=self.domain)
+                    if system is None:
+                        results.append({
+                            "result": "notfound"
+                            })
+                    else:
+                        self.account.add_system(skey)
+
+                        results.append({
+                            "result": "added",
+                            "system": system
+                        })
+
+            self.writeasjson({
+                "systems": results
+            })
+
+        elif cmd == 'sort':
+
+            skeys = self.request.arguments.get("skeys", [])
+
+            self.account.sort_systems(skeys)
+            self.writeasjson({
+                "result": "sorted",
+                "skeys": skeys
+            })
+
+        else:
+
+            self.writeasjson({
+                "error": "cmd must be set"
+            })
 
 
-@Route(r"/api/account/systems/del")
-class AccountNew(BaseHandler):
-    def apiget(self):
-        akey = self.get_argument("akey", "=")
-        skey = self.get_argument("skey", "=")
-
-        account = Account.filter(self.application.account.get(akey))
-        if skey not in account["skeys"]:
-            return {
-                "result": "notfound"
-            }
-        self.application.account.del_system(akey, skey)
-
-        info = {
+@Route(BaseHandler.API_PREFIX + r"/account/systems/(?P<skey>[^\/]+)")
+class AccountSystemKey(BaseHandler):
+    @BaseHandler.auth
+    def delete(self, skey):
+        self.account.del_system(skey)
+        self.writeasjson({
             "result": "deleted"
-            #"account": account
-        }
-        return info
-
-
-@Route(r"/api/account/systems/sort")
-class AccountNew(BaseHandler):
-    def apipost(self):
-        akey = self.get_argument("akey", "=")
-        logging.info('==self.request.arguments:%s', repr(self.request.arguments))
-        #skeys = json.loads(self.get_argument("skeys", "[]"))
-        skeys = self.get_arguments("skeys", [])
-        logging.info('==skeys:%s', repr(skeys))
-
-        #account = Account.filter(self.application.account.get(akey))
-        self.application.account.sort_systems(akey, skeys)
-        info = {
-            "result": "sorted",
-            #"account": account,
-            "skeys": skeys
-        }
-        return info
+        })

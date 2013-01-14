@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -
 
 from publisher import Publisher
+#from publisher import publisher
 
 import os
 """
@@ -27,26 +28,29 @@ from datetime import datetime
 
 #from time import sleep
 #import signal
-from mongolog.handlers import MongoHandler
-
+#import logger
 from config import *
 
-from db import DB
-from redis import Redis
-from db.account import Account
-from db.system import System
-from db.bingps import BinGPS
-from db.logs import Logs
+
+from mongolog.handlers import MongoHandler
+import logging
+logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().addHandler(MongoHandler.to(host=MONGO_URL, port=MONGO_PORT, db=MONGO_DATABASE, collection=LOG_COLLECTION))
+
+
+#from db import DB
+#from db.account import Account
+#from db.system import System
+#from db.bingps import BinGPS
+#from db.logs import Logs
 
 
 #from handlers import *
 from handlers.route import Route
-import handlers
+from handlers import *
 #from handlers import bingps
 
 import logging
-logging.getLogger().setLevel(logging.DEBUG)
-logging.getLogger().addHandler(MongoHandler.to(host=MONGO_URL, port=MONGO_PORT, db=MONGO_DATABASE, collection='log'))
 
 
 publisher = Publisher()
@@ -61,24 +65,21 @@ publisher = Publisher()
 #log = logging.getLogger('demo')
 #log.setLevel(logging.DEBUG)
 
-db = DB(url=MONGO_URL, db=MONGO_DATABASE)
-dblog = db.collection("log")
+#db = DB(url=MONGO_URL, db=MONGO_DATABASE)
+#dblog = db.collection("log")
 #dblog.ensure
 
-dblog.ensure_index([("time", -1)])
-dblog.ensure_index([("levelname", 1), ("time", -1)])
 
+#fake = db.collection("fake")
 
-fake = db.collection("fake")
-
-redis = Redis(unix_socket_path=REDIS_SOCKET_PATH)
+#redis = Redis(unix_socket_path=REDIS_SOCKET_PATH)
 
 inmemcounter = 0
 startedat = datetime.utcnow()
 
 
-account = Account(db, redis)
-system = System(db, redis)
+#account = Account(db, redis)
+#system = System(db, redis)
 
 
 def delta2dict(delta):
@@ -145,18 +146,18 @@ class MainHandler(tornado.web.RequestHandler):
         self.write("</ul>")
 
 
-bingps = BinGPS(db)
-logs = Logs(db)
+#bingps = BinGPS(db)
+#logs = Logs(db)
 
 
 class MyApplication(tornado.web.Application):
-    db = db
+    #db = db
     publisher = publisher
-    bingps = bingps
-    account = account
-    system = system
-    logs = logs
-    dblog = dblog
+    #bingps = bingps
+    #account = account
+    #system = system
+    #logs = logs
+    #dblog = dblog
     """
     def log_request(self, handler):
 
@@ -173,7 +174,13 @@ class MyApplication(tornado.web.Application):
         #print ' LOG:%s' % log_message
     """
 
-print "Routes=", repr([(r.name, r.regex.pattern) for r in Route.routes()])
+logging.info("Routes=%s", repr([(r.name, r.regex.pattern) for r in Route.routes()]))
+
+settings = {
+    #"xsrf_cookies": True,
+    "cookie_secret": "61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo=",
+    "debug": True
+}
 
 #application = tornado.web.Application([
 application = MyApplication([
@@ -187,7 +194,7 @@ application = MyApplication([
     #(r'/firmware.*', 'point.main.Firmware'),
 
     #(r"/logs", handlers.logs.Logs, dict(dblog=dblog)),
-] + Route.routes(), debug=True)
+] + Route.routes(), **settings)
 
 
 #tornado.web.Application.log_request = MongoHandler

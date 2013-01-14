@@ -2,17 +2,14 @@
 
 from route import Route
 from base import BaseHandler
-from db.account import Account
 from db.system import System
-import base64
-import json
-import logging
 
 
-@Route(r"/api/system/changedesc")
+#@Route(r"/api/account/systems/del/(?P<akey>[^\/]+)/(?P<skey>[^\/]+)")
+@Route(BaseHandler.API_PREFIX + r"/system/changedesc/(?P<skey>[^\/]+)")
 class SystemChangeDesc(BaseHandler):
-    def apiget(self):
-        skey = self.get_argument("skey", "=")
+    def get(self, skey):
+        #skey = self.get_argument("skey", "=")
         desc = self.get_argument("desc", "Internal error")
         '''
         # TODO! Добавить проверку на право просмотра
@@ -25,9 +22,9 @@ class SystemChangeDesc(BaseHandler):
 
         #domain = self.request.host.split(':')[0]
 
-        self.application.system.change_desc(skey, desc, domain = self.domain)
+        System().change_desc(skey, desc, domain=self.domain)
 
-        info = {
+        self.writeasjson({
             "result": "not_implemented_yet",
             "skey": skey,
             "domain": self.domain,
@@ -44,6 +41,4 @@ class SystemChangeDesc(BaseHandler):
                 "path": str(self.request.path),
                 "host": str(self.request.host)
             }
-        }
-        return info
-
+        })
