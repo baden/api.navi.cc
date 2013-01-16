@@ -70,12 +70,12 @@ class System(DBBase):
                     del a["descbydomain"]
         return systems
 
-    def change_desc(self, skey, desc, domain=None):
-        logging.info(' Change desc (%s, %s, %s)', skey, desc, domain)
+    def change_desc(self, desc, domain=None):
+        logging.info(' Change desc (%s, %s, %s)', self.key, desc, domain)
         self.reset_cache()
         self.collection.update(
             {
-                "_id": skey
+                "_id": self.key
             },
             {
                 "$set": {

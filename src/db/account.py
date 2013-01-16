@@ -45,6 +45,10 @@ class Account(DBBase):
         self.reset_cache()
         self.collection.update({"_id": self.key}, {"$push": {"skeys": skey}})
 
+    def add_systems(self, skeys):
+        self.reset_cache()
+        self.collection.update({"_id": self.key}, {"$pushAll": {"skeys": skeys}})
+
     def del_system(self, skey):
         self.reset_cache()
         self.collection.update({"_id": self.key}, {"$pull": {"skeys": skey}})

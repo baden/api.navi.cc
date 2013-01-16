@@ -10,19 +10,17 @@ from db.logs import Logs
 #import logging
 
 
-@Route(BaseHandler.API_PREFIX + r"/logs/get/(?P<skey>.*)")
+@Route(BaseHandler.API_PREFIX + r"/logs/(?P<skey>[^\/]*)")
 class LogsGet(BaseHandler):
+    @BaseHandler.auth
     def get(self, skey):
-        #skey = self.get_argument("skey", "=")
         # TODO! Добавить проверку на право просмотра
-        #akey = self.get_argument("akey", "")
-        #domain = Account.get_domain(akey)
-        #account = Account.filter(self.application.account.get(akey))
 
-        logs, cursor = Logs().get_for_skey(skey, limit=100)
+        limit = int(self.request.arguments.get("limit", "100"))
+
+        logs, cursor = Logs(cached=False).get_for_skey(skey, limit=limit)
 
         self.writeasjson({
-            "result": "not_implemented_yet",
             "logs": logs,
             "cursor": {
                 "dir": dir(cursor),

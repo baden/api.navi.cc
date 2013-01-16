@@ -13,13 +13,12 @@ from db.params import Params
 
 @Route(BaseHandler.API_PREFIX + r"/params/(?P<skey>[^\/]*)")
 class ParamsGet(BaseHandler):
+    @BaseHandler.auth
     def get(self, skey):
         #value = Params.get(skey)
-        document = Params(skey).document
-        value = Params(skey).from_json()
+        #document = Params.get(skey).document
+        value = Params.get(skey).from_json()
         self.writeasjson({
             "skey": skey,
             "value": value,
-            "document": document,
-            "result": "not_implemented_yet"
         })

@@ -8,8 +8,8 @@ from base import DBBase
 
 
 class Logs(DBBase):
-    def __init__(self):
-        super(Logs, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(Logs, self).__init__(*args, **kwargs)
         self.collection.ensure_index([
             ("skey", 1), ("dt", 1)
         ])

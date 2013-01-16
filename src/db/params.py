@@ -29,6 +29,7 @@ class Params(DBBase):
 
         super(Params, cls).save({'save': json.dumps(object)}, key=skey)
 
+    """
     @classmethod
     def get(cls, skey):
         logging.info('=== find(%s)', str(skey))
@@ -37,3 +38,4 @@ class Params(DBBase):
         if value is None:
             return None
         return json.loads(value["save"])
+    """

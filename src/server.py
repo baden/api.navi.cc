@@ -246,7 +246,7 @@ def main():
     #signal.signal(signal.SIGINT, sig_handler)
 
     address = os.environ.get('INTERNAL_IP', '0.0.0.0')
-    port = int(os.environ.get('INTERNAL_POINT_PORT', '8183'))
+    port = int(os.environ.get('INTERNAL_POINT_PORT', '8182'))
     application.listen(port, address=address)
     try:
         IOLoop.instance().start()

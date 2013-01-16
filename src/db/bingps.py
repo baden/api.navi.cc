@@ -7,8 +7,8 @@ import logging
 
 
 class BinGPS(DBBase):
-    def __init__(self):
-        super(BinGPS, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(BinGPS, self).__init__(*args, **kwargs)
         self.collection.ensure_index([
             ("skey", 1), ("hour", 1)
         ])

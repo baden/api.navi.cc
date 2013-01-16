@@ -1,0 +1,4 @@
+*.py[cod]
+
+channel.sublime-project
+channel.sublime-workspace

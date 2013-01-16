@@ -4,25 +4,22 @@ from route import Route
 from base import BaseHandler
 from db.system import System
 
+import logging
+
 
 #@Route(r"/api/account/systems/del/(?P<akey>[^\/]+)/(?P<skey>[^\/]+)")
-@Route(BaseHandler.API_PREFIX + r"/system/changedesc/(?P<skey>[^\/]+)")
-class SystemChangeDesc(BaseHandler):
-    def get(self, skey):
+@Route(BaseHandler.API_PREFIX + r"/system/(?P<skey>[^\/]+)")
+class APISystem(BaseHandler):
+    @BaseHandler.auth
+    def patch(self, skey):
+
         #skey = self.get_argument("skey", "=")
-        desc = self.get_argument("desc", "Internal error")
-        '''
-        # TODO! Добавить проверку на право просмотра
-        akey = self.get_argument("akey", "")
-        domain = Account.get_domain(akey)
-        #account = Account.filter(self.application.account.get(akey))
+        desc = self.request.arguments.get("desc", None)
 
-        self.application.system.get(skey)
-        '''
+        logging.info('System PATH of %s (%s)', skey, repr(self.request.arguments))
 
-        #domain = self.request.host.split(':')[0]
-
-        System().change_desc(skey, desc, domain=self.domain)
+        if desc is not None:
+            System(skey).change_desc(desc, domain=self.domain)
 
         self.writeasjson({
             "result": "not_implemented_yet",

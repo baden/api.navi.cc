@@ -92,6 +92,29 @@ class AccountSystem(BaseHandler):
 
             results = []
 
+            skeys = [System.imei_to_key(imei) for imei in imeis]
+            systems = System(key=None, cached=True).find_all(skeys, domain=self.domain)
+            pushAll = []
+
+            for skey, system in systems.iteritems():
+                if skey in self.account.document["skeys"]:
+                    results.append({
+                        "result": "already"
+                        })
+                else:
+                    if system is None:
+                        results.append({
+                            "result": "notfound"
+                            })
+                    else:
+                        pushAll.append(skey)
+                        results.append({
+                            "result": "added",
+                            "system": system
+                        })
+            self.account.add_systems(pushAll)
+
+            '''
             for imei in imeis:
                 skey = System.imei_to_key(imei)
 
@@ -112,6 +135,7 @@ class AccountSystem(BaseHandler):
                             "result": "added",
                             "system": system
                         })
+            '''
 
             self.writeasjson({
                 "systems": results

@@ -47,7 +47,7 @@ class BaseHandler(RequestHandler):
         self.set_header('Content-Type', 'application/json; charset=utf-8')
         self.set_header('Access-Control-Allow-Origin', self.request.headers.get('Origin', '*'))
         self.set_header('Access-Control-Allow-Headers', 'Authorization, Content-Type, X-Requested-With, Content-Length')
-        self.set_header('Access-Control-Allow-Methods', 'OPTIONS, HEAD, GET, POST, PUT, DELETE')
+        self.set_header('Access-Control-Allow-Methods', 'OPTIONS, HEAD, GET, POST, PATCH, PUT, DELETE')
         self.set_header('Access-Control-Allow-Credentials', 'true')
 
     def options(self, *args, **kwargs):
@@ -88,25 +88,25 @@ class BaseHandler(RequestHandler):
                     domain = 'default'
         self.domain = urlparse(domain).netloc.split(':')[0].replace('.', '_').replace('$', '_')
 
-        if self.request.method == 'POST':
-            '''
-                AngularJS по умолчанию использует Content-Type: application/json для POST-передачи
-            '''
-            if 'Content-Type' in self.request.headers:
-                if "application/json" in self.request.headers['Content-Type']:
-                    payload = self.request.body
-                    logging.info('==payload:%s', payload)
-                    try:
-                        paydata = json.loads(payload)
-                    except ValueError:
-                        #raise tornado.httpserver._BadRequestException(
-                        raise HTTPError(400, "Problems parsing JSON")
-                    if type(paydata) != dict:
-                        #raise tornado.httpserver._BadRequestException(
-                        raise HTTPError(400, "JSON only accept key value objects")
-                    logging.info('==paydata:%s', paydata)
-                    for k, v in paydata.iteritems():
-                        self.request.arguments[k] = v
+        '''
+            AngularJS по умолчанию использует Content-Type: application/json для POST-передачи
+        '''
+        logging.info('*** PRE (%s)', self.request.headers.get('Content-Type', ''))
+        if "application/json" in self.request.headers.get('Content-Type', ''):
+            payload = self.request.body.decode('utf-8')
+            if len(payload) > 0:
+                logging.info('==payload:%s', payload)
+                try:
+                    paydata = json.loads(payload)
+                except ValueError:
+                    #raise tornado.httpserver._BadRequestException(
+                    raise HTTPError(400, "Problems parsing JSON")
+                if type(paydata) != dict:
+                    #raise tornado.httpserver._BadRequestException(
+                    raise HTTPError(400, "JSON only accept key value objects")
+                logging.info('==paydata:%s', paydata)
+                for k, v in paydata.iteritems():
+                    self.request.arguments[k] = v
 
         hash = hmac.new(self.application.settings["cookie_secret"], digestmod=hashlib.sha1)
         hash.update(str(self.request.remote_ip))
