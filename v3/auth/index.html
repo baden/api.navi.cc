@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Language" content="en-us" />
   <meta http-equiv="imagetoolbar" content="false" />
   <meta name="MSSmartTagsPreventParsing" content="true" />
-  <title>api.navi.cc API</title>
+  <title></title>
   <link rel="alternate" type="application/atom+xml" title="API Changes" href="/changes.atom" />
   <link href="/css/reset.css" rel="stylesheet" type="text/css" />
   <link href="/css/960.css" rel="stylesheet" type="text/css" />
@@ -37,34 +37,75 @@
 
     <div id="wrapper">
       <div class="content">
-    <h1 id="apinavicc-api">api.navi.cc API</h1>
+    <h1 id="section">Авторизация</h1>
 
-<p>Это официальный документ для api.navi.cc версии 1.0. Если вы испытываете проблемы или имеете пожелания, пожалуйста свяжитесь с нами по адресу <a href="mailto:baden.i.ua@gmail.com?subject=api.navi.cc_APIv1">support</a>.</p>
+<ul id="markdown-toc">
+<li><a href="#section-1">Вход или создание акаунта</a></li>
+  <li><a href="#section-4">Выход из акаунта</a></li>
+</ul><h2 id="section-1">Вход или создание акаунта</h2>
 
-<p>Навигация по ресурсам API справа »</p>
+<pre><code>GET /login
+</code></pre>
 
-<h4 id="section">Реализованные ресурсы</h4>
+<h3 id="section-2">Запрос</h3>
 
-<ul>
-<li>
-<code>[✓]</code> <del>Аккаунт.</del>
-</li>
-  <li>
-<code>[✓]</code> <del>Системы</del>
-</li>
-  <li>
-<code>[ ]</code> Настройки</li>
-  <li>
-<code>[ ]</code> События</li>
-  <li>
-<code>[ ]</code> Треки</li>
-  <li>
-<code>[ ]</code> Гео-зоны</li>
-  <li>
-<code>[ ]</code> Маршруты</li>
-  <li>
-<code>[ ]</code> Отчеты</li>
-</ul>
+<dl>
+<dt>username</dt>
+  <dd>
+<em>Обязательный</em> <strong>string</strong> - Имя пользователя</dd>
+  <dt>password</dt>
+  <dd>
+<em>Обязательный</em> <strong>string</strong> - Пароль</dd>
+  <dt>email</dt>
+  <dd>
+<em>Необязательный</em> <strong>string</strong> - Электронная почта</dd>
+  <dt>title</dt>
+  <dd>
+<em>Необязательный</em>  <strong>string</strong> - Отображаемое имя</dd>
+</dl><h3 id="section-3">Ответ</h3>
+
+<pre class="headers"><code>Status: 200 OK</code></pre>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"result"</span><span class="o">:</span> <span class="s2">"created"</span><span class="p">,</span>
+  <span class="s2">"access_token"</span><span class="o">:</span> <span class="s2">"SomeToken"</span><span class="p">,</span>
+  <span class="s2">"account"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"username"</span><span class="o">:</span> <span class="s2">"baden"</span><span class="p">,</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
+    <span class="s2">"domain"</span><span class="o">:</span> <span class="s2">"some_domain"</span><span class="p">,</span>
+    <span class="s2">"created_at"</span><span class="o">:</span> <span class="s2">"2008-01-14T04:33:35Z"</span><span class="p">,</span>
+    <span class="s2">"role"</span><span class="o">:</span> <span class="s2">"user"</span><span class="p">,</span>
+    <span class="s2">"skeys"</span><span class="o">:</span> <span class="p">[</span>
+      <span class="s2">"SKEY1"</span><span class="p">,</span>
+      <span class="s2">"SKEY2"</span>
+    <span class="p">],</span>
+    <span class="s2">"systems"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"SKEY1"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"123"</span>
+      <span class="p">},</span>
+      <span class="s2">"SKEY2"</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"124"</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">"akey"</span><span class="o">:</span> <span class="s2">"AKEY1"</span><span class="p">,</span>
+    <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
+    <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"NaviCC"</span><span class="p">,</span>
+    <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="section-4">Выход из акаунта</h2>
+
+<pre><code>GET /logout
+</code></pre>
+
+<h3 id="section-5">Ответ</h3>
+
+<pre class="headers"><code>Status: 200 OK</code></pre>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"result"</span><span class="o">:</span> <span class="s2">"logout"</span>
+<span class="p">}</span></code></pre>
       </div>
 
     <div id="js-sidebar" class="sidebar-shell">

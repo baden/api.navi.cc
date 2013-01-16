@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Language" content="en-us" />
   <meta http-equiv="imagetoolbar" content="false" />
   <meta name="MSSmartTagsPreventParsing" content="true" />
-  <title>api.navi.cc API</title>
+  <title>Account | api.navi.cc</title>
   <link rel="alternate" type="application/atom+xml" title="API Changes" href="/changes.atom" />
   <link href="/css/reset.css" rel="stylesheet" type="text/css" />
   <link href="/css/960.css" rel="stylesheet" type="text/css" />
@@ -37,34 +37,104 @@
 
     <div id="wrapper">
       <div class="content">
-    <h1 id="apinavicc-api">api.navi.cc API</h1>
+    <h1 id="section">Аккаунт</h1>
 
-<p>Это официальный документ для api.navi.cc версии 1.0. Если вы испытываете проблемы или имеете пожелания, пожалуйста свяжитесь с нами по адресу <a href="mailto:baden.i.ua@gmail.com?subject=api.navi.cc_APIv1">support</a>.</p>
+<ul id="markdown-toc">
+<li><a href="#section-1">Получение авторизованного аккаунта</a></li>
+  <li><a href="#section-3">Обновление авторизованного аккаунта</a></li>
+</ul><p>Большинство запросов работают с <a href="/v3/#authentication">авторизованным аккаунтом</a>.
+Такие запросы не содержат параметр <code>:akey</code>.</p>
 
-<p>Навигация по ресурсам API справа »</p>
+<h2 id="section-1">Получение авторизованного аккаунта</h2>
 
-<h4 id="section">Реализованные ресурсы</h4>
+<pre><code>GET /account
+</code></pre>
 
-<ul>
-<li>
-<code>[✓]</code> <del>Аккаунт.</del>
-</li>
-  <li>
-<code>[✓]</code> <del>Системы</del>
-</li>
-  <li>
-<code>[ ]</code> Настройки</li>
-  <li>
-<code>[ ]</code> События</li>
-  <li>
-<code>[ ]</code> Треки</li>
-  <li>
-<code>[ ]</code> Гео-зоны</li>
-  <li>
-<code>[ ]</code> Маршруты</li>
-  <li>
-<code>[ ]</code> Отчеты</li>
-</ul>
+<h3 id="section-2">Ответ</h3>
+
+<pre class="headers"><code>Status: 200 OK</code></pre>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"username"</span><span class="o">:</span> <span class="s2">"baden"</span><span class="p">,</span>
+  <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
+  <span class="s2">"domain"</span><span class="o">:</span> <span class="s2">"some_domain"</span><span class="p">,</span>
+  <span class="s2">"created_at"</span><span class="o">:</span> <span class="s2">"2008-01-14T04:33:35Z"</span><span class="p">,</span>
+  <span class="s2">"role"</span><span class="o">:</span> <span class="s2">"user"</span><span class="p">,</span>
+  <span class="s2">"skeys"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="s2">"SKEY1"</span><span class="p">,</span>
+    <span class="s2">"SKEY2"</span>
+  <span class="p">],</span>
+  <span class="s2">"systems"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"SKEY1"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"123"</span>
+    <span class="p">},</span>
+    <span class="s2">"SKEY2"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"124"</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">"akey"</span><span class="o">:</span> <span class="s2">"AKEY1"</span><span class="p">,</span>
+  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
+  <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"NaviCC"</span><span class="p">,</span>
+  <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="section-3">Обновление авторизованного аккаунта</h2>
+
+<pre><code>PATCH /account
+</code></pre>
+
+<h3 id="section-4">Запрос</h3>
+
+<dl>
+<dt>title</dt>
+  <dd>
+<em>Optional</em> <strong>string</strong>
+</dd>
+  <dt>email</dt>
+  <dd>
+<em>Optional</em> <strong>string</strong> - Publicly visible email address.</dd>
+  <dt>company</dt>
+  <dd>
+<em>Optional</em> <strong>string</strong>
+</dd>
+  <dt>location</dt>
+  <dd>
+<em>Optional</em> <strong>string</strong>
+</dd>
+</dl><pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
+  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
+  <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"NaviCC"</span><span class="p">,</span>
+  <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
+<span class="p">}</span></code></pre>
+
+<h3 id="section-5">Ответ</h3>
+
+<pre class="headers"><code>Status: 200 OK</code></pre>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"username"</span><span class="o">:</span> <span class="s2">"baden"</span><span class="p">,</span>
+  <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
+  <span class="s2">"domain"</span><span class="o">:</span> <span class="s2">"some_domain"</span><span class="p">,</span>
+  <span class="s2">"created_at"</span><span class="o">:</span> <span class="s2">"2008-01-14T04:33:35Z"</span><span class="p">,</span>
+  <span class="s2">"role"</span><span class="o">:</span> <span class="s2">"user"</span><span class="p">,</span>
+  <span class="s2">"skeys"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="s2">"SKEY1"</span><span class="p">,</span>
+    <span class="s2">"SKEY2"</span>
+  <span class="p">],</span>
+  <span class="s2">"systems"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"SKEY1"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"123"</span>
+    <span class="p">},</span>
+    <span class="s2">"SKEY2"</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"124"</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">"akey"</span><span class="o">:</span> <span class="s2">"AKEY1"</span><span class="p">,</span>
+  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
+  <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"NaviCC"</span><span class="p">,</span>
+  <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
+<span class="p">}</span></code></pre>
       </div>
 
     <div id="js-sidebar" class="sidebar-shell">
