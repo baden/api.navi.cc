@@ -1,0 +1,49 @@
+production:
+  host: localhost
+  port: 8183
+  cookies:
+    expires_days: 31
+  db:
+    host: mongodb://login:password@host:port/baden_name
+    name: db_name
+  redis: {}
+  session:
+    redis:
+      host: localhost
+      db: 1
+  logging:
+    # info http://docs.python.org/2/library/logging.config.html
+    version: 1 #required
+    formatters:
+      simple:
+         format: '%(message)s'
+      default:
+        format: '%(asctime)s %(levelname)-8s %(name)-25s : %(message)s'
+        datefmt: '%Y-%m-%d %H:%M:%S'
+    #filters:
+    #  test:
+    #    name:
+    handlers:
+      console:
+        class : logging.StreamHandler
+        formatter: default
+        stream  : ext://sys.stderr
+      null_file:
+        class: logging.FileHandler
+        formatter: default
+        filename: 'c:\nul'
+    loggers:
+      db:
+        level: DEBUG
+      handlers:
+        level: DEBUG
+      libraries:
+        level: DEBUG
+    root:
+      level: DEBUG
+      #filters:
+      handlers: [console]
+testing:
+  _extends: production
+development:
+  _extends: production

@@ -1,0 +1,18 @@
+production:
+  db:
+    host: mongodb://login:password@host:port/baden_name
+  redis:
+    unix_socket_path: /tmp/redis.sock
+  logging:
+    handlers:
+      mongo:
+        (): mongolog.handlers.MongoHandler
+        collection: log
+#        db:
+#        host:
+#        port:
+#        level:
+testing:
+  _extends: production
+development:
+  _extends: production
