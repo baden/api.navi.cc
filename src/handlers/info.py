@@ -152,14 +152,27 @@ class Pickle(BaseHandler):
 
 
 @Route(BaseHandler.API_PREFIX + r"/testtimeout")
-class TestTimeout(BaseHandler):
+class TestTimeout(RequestHandler):
     @asynchronous
     def get(self):
         from tornado.ioloop import IOLoop
         from datetime import timedelta
 
-        def send():
-            self.writeasjson({"result": "DONE"})
+        self.counter = 150
 
-        IOLoop.instance().add_timeout(timedelta(0, 150), send)
+        def send():
+            try:
+                self.write(".")
+            except:
+                self.finish()
+                return
+
+            self.counter = self.counter - 1
+            if self.counter > 0:
+                IOLoop.instance().add_timeout(timedelta(0, 1), send)
+            else:
+                self.finish()
+
+        send()
+
         #send()
