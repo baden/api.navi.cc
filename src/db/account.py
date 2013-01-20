@@ -57,6 +57,14 @@ class Account(DBBase):
         self.reset_cache()
         self.collection.update({"_id": self.key}, {"$set": {"skeys": skeys}})
 
+    def set_token(self, access_token):
+        self.reset_cache()
+        self.collection.update({"_id": self.key}, {"$push": {"access_tokens": access_token}})
+
+    def reset_token(self, access_token):
+        self.reset_cache()
+        self.collection.update({"_id": self.key}, {"$pull": {"access_tokens": access_token}})
+
     def create(self, domain, name, password):
         if self.document is not None:   # Подавим пересоздание
             return
@@ -64,15 +72,14 @@ class Account(DBBase):
         self.document = {
             "_id": akey,
             "domain": domain,
-            "name": name,               # TODO! Не забыть это убрать!!!
-            "password": password,       # TODO! Не забыть это убрать!!!
-            "date": int(time()),        # Дата создания записи
+            "created_at": int(time()),  # Дата создания записи
             "title": name,              # Отображаемое имя пользователя
             "desc": {},                 # Произвольные записи информации о пользователе
             "premium": int(time()),     # Дата окончания премиум-подписки
             "config": {},               # Персональные параметры конфигурации, тема сайта, параметры отображения и т.п.
             "skeys": [],                # Список наблюдаемых систем (массив ключей)
-            "admin": False,             # Права администрирования. Администратор может иметь право просматривать список пользователей домена, и возможно управлять ими.
+            "role": "user",             # Права администрирования. Администратор может иметь право просматривать список пользователей домена, и возможно управлять ими.
+            "access_tokens": []         # Авторизованные клиенты
         }
         self.collection.insert(self.document)
 
@@ -82,7 +89,8 @@ class Account(DBBase):
         a = self.document.copy()
         a["akey"] = a["_id"]
         del a["_id"]
-        del a["password"]
+        if "password" in a:
+            del a["password"]
         #a["systems"] = System(key=None, cached=True)
         a["systems"] = System(key=None, cached=True).find_all(a["skeys"], domain=a["domain"])
         #a["systems"] = dict([(skey, System.filter(System(skey), domain=a["domain"])) for skey in a["skeys"]])

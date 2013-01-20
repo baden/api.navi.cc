@@ -13,7 +13,7 @@ echo "Add some to start hook"
 if [[ ! -e ./misc/bin/python ]]
 then
   echo "Virtualenv не найден. Устанавливаем..."
-  virtualenv --no-site-packages misc
+  virtualenv --distribute --no-site-packages misc
 fi
 
 source ./misc/bin/activate

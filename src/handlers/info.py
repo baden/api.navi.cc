@@ -5,6 +5,7 @@ from route import Route
 from base import BaseHandler
 from time import time
 import pickle
+from tornado.web import RequestHandler, asynchronous
 
 
 api_version = "1.0"
@@ -48,6 +49,7 @@ def create_signed_value(secret, name, value):
     value = b("|").join([value, timestamp, signature])
     return value
 '''
+
 
 @Route(BaseHandler.API_PREFIX + r"/info")
 class Info(BaseHandler):
@@ -147,3 +149,17 @@ class Pickle(BaseHandler):
             "raw": value,
             "data": data
         })
+
+
+@Route(BaseHandler.API_PREFIX + r"/testtimeout")
+class TestTimeout(BaseHandler):
+    @asynchronous
+    def get(self):
+        from tornado.ioloop import IOLoop
+        from datetime import timedelta
+
+        def send():
+            self.writeasjson({"result": "DONE"})
+
+        IOLoop.instance().add_timeout(timedelta(0, 150), send)
+        #send()

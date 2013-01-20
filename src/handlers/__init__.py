@@ -4,6 +4,7 @@ print ':handlers:core:import'
 
 __all__ = [
     "info",
+    "auth",
     "account",
     "system",
     "logs",

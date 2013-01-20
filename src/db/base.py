@@ -3,20 +3,44 @@
 
 import logging
 from config import MONGO_URL, MONGO_DATABASE, REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_SOCKET_PATH, DISABLE_CACHING
-from pymongo import Connection
+#from pymongo import Connection     # deprecated
+from pymongo import MongoClient
 import pickle
-from redis import Redis
+import redis
 
-connection = Connection(MONGO_URL)
-db = connection[MONGO_DATABASE]
-redis = Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, unix_socket_path=REDIS_SOCKET_PATH)
+import time
+import sys
+if sys.platform == "win32":
+    profiler_timer = time.clock     # On Windows, the best timer is time.clock()
+else:
+    profiler_timer = time.time      # On most other platforms the best timer is time.time()
 
 
 class DBBase(object):
+
+    connection = MongoClient(MONGO_URL)     # Single connection for all instanses
+    # Use ConnectionPool for Redis connection
+    redispool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, unix_socket_path=REDIS_SOCKET_PATH)
+    db_start = profiler_timer()
+    '''
     db = db
     redis = redis
+    '''
+
+    #connection = Connection(MONGO_URL)
+
+    db = connection[MONGO_DATABASE]
+    redis = redis.Redis(connection_pool=redispool)
+    db_stop = profiler_timer()
 
     def __init__(self, key=None, cached=False):
+        db_start = profiler_timer()
+        #connection = MongoClient(MONGO_URL)
+        self.db = self.connection[MONGO_DATABASE]
+        self.redis = redis.Redis(connection_pool=self.redispool)
+        db_stop = profiler_timer()
+        logging.error("  db.delay=%f", db_stop - db_start)
+
         if DISABLE_CACHING:
             self.cached = False
         else:
@@ -36,7 +60,10 @@ class DBBase(object):
     @classmethod
     def get(cls, key, **kwargs):
         rep = cls(key, **kwargs)
+        op_start = profiler_timer()
         rep.document = rep.find(key)
+        op_stop = profiler_timer()
+        logging.error("  op.delay=%f", op_stop - op_start)
         return rep
 
     def find(self, key):
@@ -128,6 +155,10 @@ class DBBase(object):
     def reset_cache(self):
         prefix = self.__class__.__name__
         self.redis.delete('%s.%s' % (prefix, self.key))
+
+    def update(self, param):
+        self.reset_cache()
+        self.collection.update({"_id": self.key}, param)
 
     @property
     def isNone(self):

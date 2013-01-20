@@ -8,6 +8,7 @@ from tornado.web import RequestHandler
 #from config import IMEI_BLACK_LIST
 import logging
 import json
+from jsonschema import validate, ValidationError
 import time
 import sys
 import hashlib
@@ -37,6 +38,8 @@ class BaseHandler(RequestHandler):
     """
     required = ()
 
+    schema = {}
+
     '''
     def initialize(self, *args, **kwargs):
         logging.info('** BaseHandler.initialize(%s, %s, %s)', repr(args), repr(kwargs), repr(self.request.arguments))
@@ -59,10 +62,13 @@ class BaseHandler(RequestHandler):
         if 'exc_info' in kwargs:
             exc = kwargs['exc_info'][1]
             tracebacks = []
+
             if isinstance(exc, HTTPError):
                 message = exc.log_message % exc.args
             else:
                 message = str(exc)
+
+            #message = str(exc)
             #kwargs["limit"] = 10
             for line in traceback.format_exception(*kwargs["exc_info"]):
                 for l in line.split("\n"):
@@ -79,6 +85,11 @@ class BaseHandler(RequestHandler):
         #args = [self.decode_argument(arg) for arg in args]
         #kwargs = dict((k, self.decode_argument(v, name=k)) for (k, v) in kwargs.iteritems())
         #logging.info('** BaseHandler.prepare(%s, %s, %s)', repr(args), repr(kwargs), repr(self.request.arguments))
+        domain = self.request.headers.get('Origin', None)\
+            or self.request.headers.get('Referer', None)\
+            or self.get_argument("domain", None)\
+            or "http://default"
+        '''
         domain = self.request.headers.get('Origin', None)
         if domain is None:
             domain = self.request.headers.get('Referer', None)
@@ -86,27 +97,34 @@ class BaseHandler(RequestHandler):
                 domain = self.get_argument("domain", None)
                 if domain is None:
                     domain = 'default'
+        '''
         self.domain = urlparse(domain).netloc.split(':')[0].replace('.', '_').replace('$', '_')
 
         '''
             AngularJS по умолчанию использует Content-Type: application/json для POST-передачи
         '''
         logging.info('*** PRE (%s)', self.request.headers.get('Content-Type', ''))
+        self.payload = None
         if "application/json" in self.request.headers.get('Content-Type', ''):
             payload = self.request.body.decode('utf-8')
             if len(payload) > 0:
-                logging.info('==payload:%s', payload)
+                #logging.info('==payload:%s', payload)
                 try:
-                    paydata = json.loads(payload)
+                    self.payload = json.loads(payload)
                 except ValueError:
-                    #raise tornado.httpserver._BadRequestException(
                     raise HTTPError(400, "Problems parsing JSON")
-                if type(paydata) != dict:
-                    #raise tornado.httpserver._BadRequestException(
+                if type(self.payload) != dict:
                     raise HTTPError(400, "JSON only accept key value objects")
-                logging.info('==paydata:%s', paydata)
-                for k, v in paydata.iteritems():
+                #logging.info('==paydata:%s', self.payload)
+                for k, v in self.payload.iteritems():
                     self.request.arguments[k] = v
+                if self.request.method in self.schema:
+                    try:
+                        validate(self.payload, self.schema[self.request.method])
+                    except ValidationError, e:
+                        raise HTTPError(400, str(e))
+
+        aes_start = profiler_timer()
 
         hash = hmac.new(self.application.settings["cookie_secret"], digestmod=hashlib.sha1)
         hash.update(str(self.request.remote_ip))
@@ -119,24 +137,28 @@ class BaseHandler(RequestHandler):
         self.auth = False
         self.akey = None
         access_token = self.request.headers.get('Authorization', None)
-        logging.info(' from_header = %s', access_token)
+        #logging.info(' from_header = %s', access_token)
         if access_token is None:
             access_token = self.get_argument("access_token", None)
-            logging.info(' from_argument = %s', access_token)
+            #logging.info(' from_argument = %s', access_token)
             if access_token is None:
                 access_token = self.get_cookie('access_token', None)
-                logging.info(' from_cookie = %s', access_token)
-        access_token = self.decode_signed_value("access_token", access_token)
-        logging.info(' decoded value = %s', access_token)
+                #logging.info(' from_cookie = %s', access_token)
         self.access_token = access_token
+        access_token = self.decode_signed_value("access_token", access_token)
+        #logging.info(' decoded value = %s', access_token)
         if access_token is not None:
             akey, identity = access_token.split('@')
             if identity == self.identity:
-                logging.info(' Identity is ok (%s)', identity)
+                #logging.info(' Identity is ok (%s)', identity)
                 self.auth = True
                 self.akey = akey
             else:
                 logging.info(' Wrong identity %s != %s', identity, self.identity)
+
+        aes_stop = profiler_timer()
+
+        logging.error("Time for AES:%f", aes_stop - aes_start)
 
         '''
         if 'akey' in kwargs:
@@ -151,15 +173,36 @@ class BaseHandler(RequestHandler):
         '''
 
     def writeasjson(self, data):
+        """ Возвращает результат в JSON(P) формате """
+
         if PROFILER:
             data['__profiler__'] = {
-                'request': {
-                    'method': self.request.method
+                "request": {
+                    'method': self.request.method,
+                    'payload': self.payload,
+                    #"dir": dir(self.request),
+                    "connection": {
+                        #"dir": dir(self.request.connection),
+                        "address": self.request.connection.address,
+                        "xheaders": self.request.connection.xheaders
+                    },
+                    "headers": repr(self.request.headers),
+                    "uri": str(self.request.uri),
+                    "full_url": str(self.request.full_url),
+                    "path": str(self.request.path),
+                    "host": str(self.request.host)
                 },
                 'duration': self.request.request_time()
             }
 
-        self.finish(json.dumps(data, indent=4))
+        callback = self.get_argument('callback', None)
+        if callback is not None:
+            data["meta"] = {
+                "status": self.get_status()
+            }
+            self.finish(callback + "(" + json.dumps(data, indent=4) + ");")
+        else:
+            self.finish(json.dumps(data, indent=4))
 
     @staticmethod
     def auth(method):
@@ -167,18 +210,21 @@ class BaseHandler(RequestHandler):
         def wrapper(self, *args, **kwargs):
             if not self.auth or self.akey is None:
                 raise HTTPError(401, "Requires authentication")
-            self.account = Account.get(self.akey, cached=True)
-            if self.account is None:
-                '''
-                self.writeasjson({
-                    "akey": None,
-                    "account": None,
-                })
-                '''
-                raise HTTPError(401, "Account not found")
-
             method(self, *args, **kwargs)
         return wrapper
+
+    @property
+    def account(self):
+        if not hasattr(self, '_account'):
+            self._account = Account.get(self.akey, cached=True)
+
+            if self.access_token not in self._account.document["access_tokens"]:
+                raise HTTPError(401, "Error access token: The session is invalid because the " +
+                        "user logged out.")
+            if self._account is None:
+                raise HTTPError(401, "Account not found")
+
+        return self._account
 
     #def identity(self):
     #    pass

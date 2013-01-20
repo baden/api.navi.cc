@@ -10,54 +10,38 @@ from db.system import System
 import logging
 
 
-#@Route(r"/api/account/new")
-@Route(BaseHandler.API_PREFIX + r"/login")
-class AccountLogin(BaseHandler):
-    def post(self):
-        #username = self.request.arguments.get("username")
-        #password = self.request.arguments.get("password")
-        username = self.get_argument("username")
-        password = self.get_argument("password")
-
-        # Ключ должен сожержать sefl.identyty
-        #identity = self.create_signed_value('user', 'abc')
-        account = Account.by_name_pass(self.domain, username, password)
-        #logging.info("account=%s", account)
-        result = "created"
-        if account.isNone:
-            account.create(self.domain, username, password)
-        else:
-            result = "already"
-
-        access_token = self.create_signed_value('access_token', account.key + '@' + str(self.identity))
-        self.set_secure_cookie("counter", "0")
-        self.set_cookie('access_token', access_token)
-
-        self.writeasjson({
-            "result": result,
-            #"akey": account.key,
-            "access_token": access_token,
-            "account": account.filter(),
-        })
-
-
-@Route(BaseHandler.API_PREFIX + r"/logout")
-class AccountLogout(BaseHandler):
-    def post(self):
-        self.set_cookie('access_token', '')
-        #self.clear_cookie('access_token', '')
-        self.writeasjson({
-            "result": 'logout',
-        })
-
-
-# TODO! Написать wraper для указания необходимости авторизации
-
-
 @Route(BaseHandler.API_PREFIX + r"/account")
 class AccountGet(BaseHandler):
+    schema = {}
+
     @BaseHandler.auth
     def get(self):
+        self.writeasjson({
+            "account": self.account.filter(),
+        })
+
+    schema["PATCH"] = {
+        "title": "patch account",
+        "type": "object",
+        "properties": {
+            "$set": {
+                "type": "object",
+                "required": False,
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "required": False
+                    }
+                },
+                "additionalProperties": False
+            }
+        },
+        "additionalProperties": False
+    }
+
+    @BaseHandler.auth
+    def patch(self):
+        self.account.update(self.payload)
         self.writeasjson({
             "account": self.account.filter(),
         })
@@ -74,6 +58,19 @@ class AccountGetAll(BaseHandler):
 
 @Route(BaseHandler.API_PREFIX + r"/account/systems")
 class AccountSystem(BaseHandler):
+    schema = {}
+    schema["POST"] = {
+        "title": "post account/systems",
+        "type": "object",
+        "properties": {
+            "cmd": {
+                "type": "string",
+                "required": True
+            }
+        },
+        "additionalProperties": True
+    }
+
     @BaseHandler.auth
     def post(self):
         cmd = self.request.arguments.get("cmd", '')
@@ -96,13 +93,15 @@ class AccountSystem(BaseHandler):
             systems = System(key=None, cached=True).find_all(skeys, domain=self.domain)
             pushAll = []
 
-            for skey, system in systems.iteritems():
+            for imei in imeis:
+                skey = System.imei_to_key(imei)
                 if skey in self.account.document["skeys"]:
                     results.append({
                         "result": "already"
                         })
                 else:
-                    if system is None:
+                    #system = System.get(skey).filter(domain=self.domain)
+                    if systems[skey] is None:
                         results.append({
                             "result": "notfound"
                             })
@@ -110,32 +109,9 @@ class AccountSystem(BaseHandler):
                         pushAll.append(skey)
                         results.append({
                             "result": "added",
-                            "system": system
+                            "system": systems[skey]
                         })
             self.account.add_systems(pushAll)
-
-            '''
-            for imei in imeis:
-                skey = System.imei_to_key(imei)
-
-                if skey in self.account.document["skeys"]:
-                    results.append({
-                        "result": "already"
-                        })
-                else:
-                    system = System.get(skey).filter(domain=self.domain)
-                    if system is None:
-                        results.append({
-                            "result": "notfound"
-                            })
-                    else:
-                        self.account.add_system(skey)
-
-                        results.append({
-                            "result": "added",
-                            "system": system
-                        })
-            '''
 
             self.writeasjson({
                 "systems": results
