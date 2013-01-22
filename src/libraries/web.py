@@ -5,7 +5,7 @@ from tornado.httpserver import HTTPRequest
 
 from tornado.web import RequestHandler, HTTPError, URLSpec
 import tornado.web
-from types import FunctionType, ClassType
+from types import FunctionType
 from application import BaseCollection
 from libraries.logger import log_event
 from libraries.session import SessionManager
@@ -360,9 +360,7 @@ class RestHandler(BaseHandler):
 
                 kwargs['data'] = filtered_data
                 if id:
-                    object = self.get_model(id)
-                    kwargs['model'] = object
-
+                    kwargs['id'] = id
                 result = getattr(self, action)(*args, **kwargs)
                 if result != None:
                     result = self.filter_response(result, id=id, action=action)
@@ -400,7 +398,7 @@ class RestHandler(BaseHandler):
     def index(self, *args, **kwargs):
         raise RestError(NOT_IMPLEMENTED)
 
-    def get(self, model, *args, **kwargs):
+    def get(self, id, *args, **kwargs):
         raise RestError(NOT_IMPLEMENTED)
 
     def head(self, *args, **kwargs):
@@ -409,13 +407,13 @@ class RestHandler(BaseHandler):
     def post(self, data, *args, **kwargs):
         raise RestError(NOT_IMPLEMENTED)
 
-    def delete(self, model, *args, **kwargs):
+    def delete(self, id, *args, **kwargs):
         raise RestError(NOT_IMPLEMENTED)
 
-    def patch(self, model, data, *args, **kwargs):
+    def patch(self, id, data, *args, **kwargs):
         raise RestError(NOT_IMPLEMENTED)
 
-    def put(self, model, data, *args, **kwargs):
+    def put(self, id, data, *args, **kwargs):
         raise RestError(NOT_IMPLEMENTED)
 
     def options(self, *args, **kwargs):
@@ -599,7 +597,7 @@ class RestRoute(BaseRouter):
             else:
                 route += action_regexp
         else:
-            route = route.replace("{{action}}","")
+            route = route.replace("{{action}}", "")
 
         handler._default_router_params = self.defaults
         spec = URLSpec(route, handler, self.initialize, name=name)

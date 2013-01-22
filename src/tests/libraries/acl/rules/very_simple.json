@@ -1,0 +1,25 @@
+{
+    "roles":{
+        "taxi":{
+            "systems":{
+                "access":"allow"
+            }
+        }
+    },
+    "rules":[
+        {
+            "type":"user",
+            "$id":"uid1",
+            "roles":{
+                "taxi":1
+            },
+            "filter_by":{
+                "devices":{
+                    "$groups":{
+                        "all":1
+                    }
+                }
+            }
+        }
+    ]
+}

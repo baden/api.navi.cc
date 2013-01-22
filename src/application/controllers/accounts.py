@@ -2,7 +2,7 @@
 import re
 from application.collections.accounts import Account as AccountModel
 from libraries.logger import LoggerMixin
-from libraries.web import RestHandler, RestRoute, NOT_IMPLEMENTED, RestError, FORBIDDEN, METHOD_NOT_ALLOWED, RemoveItem, BaseRouter
+from libraries.web import RestHandler, RestRoute, RestError, FORBIDDEN, METHOD_NOT_ALLOWED, ACCEPTED
 from ..collections.accounts import Accounts as AccountsCollection
 
 
@@ -59,16 +59,15 @@ class Accounts(RestHandler):
         account.save()
         return  account
 
-    def get(self, model, *args, **kwargs):
-        return model
+    def get(self, id, *args, **kwargs):
+        return self.get_model(id)
 
-    def patch(self, model, data, *args, **kwargs):
+    def patch(self, id, data, *args, **kwargs):
         """
         :type model: application.collections.accounts.Account
         """
-        model.update(data)
-        model.save()
-        return model
+        self.collection.update(id, data)
+        self.set_status(ACCEPTED)
 
 
 @RestRoute(route='/account{{action}}')
@@ -87,14 +86,9 @@ class Accountaaa(Accounts, LoggerMixin):
         request_method = self.request.method.lower()
         return id, request_method
 
-
-    def index(self, *args, **kwargs):
-        return self.get(*args, **kwargs)
-
     def post(self, data, *args, **kwargs):
         raise RestError(METHOD_NOT_ALLOWED)
 
     def logout(self, **kwargs):
         raise self.session.close_session()
-
 

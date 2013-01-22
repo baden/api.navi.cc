@@ -1,0 +1,52 @@
+{
+    "roles":{
+        "taxi":{
+            "systems":{
+                "index":{
+                    "access":"allow",
+                    "filter_by":{
+                        "object_id":1
+                    },
+                    "allowed_fields":["name", "gasoline", "speed"]
+                },
+                "login":{
+                    "access":"allow"
+                }
+            },
+            "reports":{
+                "index":{
+                    "access":"allow"
+                }
+            }
+        },
+        "denied_strange":{
+            "systems":{
+                "access":"deny",
+                "login":{
+                    "access":"allow"
+                }
+            }
+        }
+
+
+    },
+    "rules":[
+        {
+            "type":"user",
+            "$id":"uid1",
+            "roles":{
+                "taxi":1,
+                "denied_strange":1
+            },
+            "filter_by":{
+                "devices":{
+                    "$groups":{
+                        "all":1
+                    }
+                }
+            }
+        }
+
+
+    ]
+}
