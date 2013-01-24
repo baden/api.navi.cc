@@ -175,4 +175,9 @@ class TestTimeout(RequestHandler):
 
         send()
 
-        #send()
+
+@Route(BaseHandler.API_PREFIX + r"/testbig")
+class TestBig(RequestHandler):
+    def get(self):
+        data = "Some data for testing big_data_packet.\r\n" * 10000
+        self.finish(data)

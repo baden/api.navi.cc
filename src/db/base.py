@@ -20,7 +20,8 @@ class DBBase(object):
 
     connection = MongoClient(MONGO_URL)     # Single connection for all instanses
     # Use ConnectionPool for Redis connection
-    redispool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, unix_socket_path=REDIS_SOCKET_PATH)
+    if REDIS_HOST is not None:
+        redispool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
     db_start = profiler_timer()
     '''
     db = db
@@ -28,16 +29,23 @@ class DBBase(object):
     '''
 
     #connection = Connection(MONGO_URL)
-
+    """
     db = connection[MONGO_DATABASE]
-    redis = redis.Redis(connection_pool=redispool)
+    if REDIS_HOST is not None:
+        redis = redis.Redis(connection_pool=redispool)
+    else:
+        redis = redis.Redis(db=REDIS_DB, unix_socket_path=REDIS_SOCKET_PATH)
     db_stop = profiler_timer()
+    """
 
     def __init__(self, key=None, cached=False):
         db_start = profiler_timer()
         #connection = MongoClient(MONGO_URL)
         self.db = self.connection[MONGO_DATABASE]
-        self.redis = redis.Redis(connection_pool=self.redispool)
+        if REDIS_HOST is not None:
+            self.redis = redis.Redis(connection_pool=self.redispool)
+        else:
+            self.redis = redis.Redis(unix_socket_path=REDIS_SOCKET_PATH, db=REDIS_DB)
         db_stop = profiler_timer()
         logging.error("  db.delay=%f", db_stop - db_start)
 
