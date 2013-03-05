@@ -111,23 +111,7 @@ module GitHub
         "login_wr" => "Wron login or password"
     }
 
-    ACCOUNT           = {
-        "username"   => "baden",
-        "title"      => "Денис",
-        "domain"     => "some_domain",
-        "created_at" => "2008-01-14T04:33:35Z",
-        "roles"      => ["manager", "owner"],
-        "skeys"      => ["SKEY1", "SKEY2"],
-        "systems"    => {
-            "SKEY1" => {
-                "imei" => "123"
-            },
-            "SKEY2" => {
-                "imei" => "124"
-            }
-        },
-        "akey"       => "AKEY1"
-    }
+
     SYSTEM_CREATE     = {
         "imei"            => "IMEI_15symb",
         "phone"           => "+380670001122",
@@ -148,6 +132,15 @@ module GitHub
     USER_SYSTEM       =USER_SYSTEM_CREATE.merge({
 
                                                 })
+    ACCOUNT           = {
+        "username" => "baden",
+        "title"    => "Денис",
+        "created"  => "2008-01-14T04:33:35Z",
+        "roles"    => ["manager", "owner"],
+
+        "systems"  => [USER_SYSTEM, USER_SYSTEM, USER_SYSTEM]
+
+    }
     SYSTEM_STATUS_1   ={
         "last_position" => [],
         "main_power"    => 12.2222,
@@ -190,9 +183,9 @@ module GitHub
     ]
 
     FULL_ACCOUNT = ACCOUNT.merge({
-                                     "email"    => "denis@batrak.com",
-                                     "company"  => "NaviCC",
-                                     "location" => "Днепропетровск"
+                                     "email"            => "denis@batrak.com",
+                                     "default_timezone" => "Europe\\Kiev",
+                                     "location"         => "Днепропетровск"
                                  })
 
     LOGIN = ACCOUNT.merge({

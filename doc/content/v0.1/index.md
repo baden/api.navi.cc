@@ -111,20 +111,20 @@ PATCH
 
 ## Авторизация
 
-Для большинства запросов требуется авторизация. После выполнения запроса `/login` будет возвращен ключ авторизации access_token.
+Для большинства запросов требуется авторизация. После выполнения запроса `/accounts/login` будет возвращен ключ авторизации token.
 
 Доступны три способа авторизации запроса:
 
-### Указание access_token как параметра запроса.
+### Указание token как параметра запроса.
 
 <pre class="terminal">
-$ curl curl -i "http://api.newgps.navi.cc/1.0/account?access_token=ACCESS_TOKEN" -H "Origin: http://some-site.com"
+$ curl curl -i "http://api.newgps.navi.cc/1.0/account?token=TOKEN" -H "Origin: http://some-site.com"
 </pre>
 
-### Указание access_token в заголовке Authorization.
+### Указание token в заголовке Authorization.
 
 <pre class="terminal">
-$ curl curl -i "http://api.newgps.navi.cc/1.0/account" -H "Origin: http://some-site.com" -H "X-Authorization: ACCESS_TOKEN"
+$ curl curl -i "http://api.newgps.navi.cc/1.0/account" -H "Origin: http://some-site.com" -H "X-Authorization: token"
 </pre>
 
 ### Использование печенек.

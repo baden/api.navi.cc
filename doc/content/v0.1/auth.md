@@ -5,25 +5,6 @@
 
 ## Вход в аккаунт
 
-    GET /accounts/login
-
-### Объект запроса
-
-username
-: _Обязательный_ **string** - Имя пользователя
-
-password
-: _Обязательный_ **string** - Пароль
-
-### Ответ
-
-<%= headers 200 %>
-<%= json :login %>
-
-Wrong login or password
-
-<%= error 403,:login_wr %>
-
 ## Создание аккаунта
 
     POST /accounts
@@ -53,12 +34,5 @@ Validation error
 
 
 
-## Выход из акаунта
-
-    POST /account/logout
-
-### Ответ
-
-<%= headers 204 %>
 
 
