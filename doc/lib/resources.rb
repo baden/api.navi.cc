@@ -91,13 +91,16 @@ module GitHub
             JSON.pretty_generate(hash) + "</code></pre>"
       end
 
-      def error(code, message)
+      def error(code, message=nil)
         hs=headers(code)
-
-        message = ERROR_MESSAGES[message.to_s.downcase]
-        hash    = {"error" => {"status" => code, "message" => message}}
-        hs+%(<pre class="highlight"><code class="language-javascript">) +
-            JSON.pretty_generate(hash) + "</code></pre>"
+        if message
+          message = ERROR_MESSAGES[message.to_s.downcase]
+          hash    = {"error" => {"status" => code, "message" => message}}
+          hs+%(<pre class="highlight"><code class="language-javascript">) +
+              JSON.pretty_generate(hash) + "</code></pre>"
+        else
+          hs
+        end
       end
 
       def text_html(response, status, head = {})
@@ -108,7 +111,7 @@ module GitHub
 
     end
     ERROR_MESSAGES={
-        "login_wr" => "Wron login or password"
+        "login_wr" => "Wrong login or password"
     }
 
 

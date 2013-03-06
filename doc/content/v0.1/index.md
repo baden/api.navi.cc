@@ -8,8 +8,8 @@ title: api.navi.cc API v1
 
 * TOC
 {:toc}
-
 ## Схема
+
 
 Все запросы начинаются с префикса `http://api.newgps.navi.cc/1.0`. Далее следует путь к ресурсу. Например, получить события, относящиеся к системе с ключом :skey можно по адресу `/logs/:skey`. Полный путь будет иметь вид:
 
@@ -87,7 +87,7 @@ $ curl -i http://api.newgps.navi.cc/1.0/login -d "username=baden&password=333" -
                 "message": "Problems parsing JSON"
         }
 
-## HTTP-Методы
+#### HTTP-Методы
 
 Там где это возможно, используются соответствующие HTTP-методы:
 
