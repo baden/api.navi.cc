@@ -32,7 +32,7 @@ title: Системы пользователя | api.navi.cc
 ### Ответ
 
 <%= headers 201 %>
-<%= json :SYSTEM_create %>
+<%= json :system %>
 ## Получение системы
 
     GET /systems/:imei

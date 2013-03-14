@@ -54,3 +54,7 @@ api_versions:
     - 2011-4-27
   -
     - v0.1
+
+#indextank:
+#  index: gps_doc
+#  api_url: http://:egytaqusejar@avubys.api.indexden.com

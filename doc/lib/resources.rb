@@ -121,15 +121,20 @@ module GitHub
         "default_voltage" => 12.0
     }
     SYSTEM            = SYSTEM_CREATE.merge({
-                                                "created" => "2008-01-14T04:33:35Z",
-                                                "owner"   => "{owher_id}"
+                                                "created"          => "2008-01-14T04:33:35Z",
+                                                "owner"            => "{owner_id}",
+                                                "type"             => "car",
+                                                "car_info"         => NIL,
+                                                "balance"          => NIL,
+                                                "balance_currency" => "USD"
+
 
                                             })
     USER_SYSTEM_CREATE={
         "imei"        => "IMEI_15symb",
         "title"       => "Tipper 896",
         "icon"        => "track2",
-        "track_color" => "ccaacc",
+        "track_color" => "BEBEBE",
         "groups"      => ["quarry_white", "quarry_main"],
     }
     USER_SYSTEM       =USER_SYSTEM_CREATE.merge({

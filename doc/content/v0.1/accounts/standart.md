@@ -21,14 +21,14 @@ Standart user accaunt in system.
 | created           | daytime       | current_time         | Date of account creation                         |
 | roles             | array(string) | user                 | Roles of the account  (only if account in corporation)
 | systems           | object        | -                    | All watched user systems                         |
-| default_timezone  | datetime      | [ddr]                | User default timezone                            |
-| time_format       | string        | HH:MM:SS             | Displaying time format                           |
+| default_timezone  | datetime      | UTC *                | User default timezone                            |
+| time_format       | string        | HH:MM:SS *           | Displaying time format                           |
 | date_format       | string        | DD-MM-YYYY           | Displaying date format                           |
 | datetime_format   | string        | HH:MM:SS DD-MM-YYYY  | Displaying date and time format                  |
-| language          | string        | [ddr]                | System language in full format "RU-ru", "EN-us"  |
+| language          | string        | en *                 | System language in full format "RU-ru", "EN-us"  |
 |-------------------+---------------+----------------------+--------------------------------------------------|
 
-*ddr -defined during registration*
+* This value defined during account registration.
 
 ## Создание аккаунта {#create}
 
