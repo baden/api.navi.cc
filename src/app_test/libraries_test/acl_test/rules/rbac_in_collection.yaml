@@ -1,0 +1,9 @@
+roles:
+  simple_user:
+    systems:
+      access: allow
+      update:
+        access: deny
+
+rules: {}
+

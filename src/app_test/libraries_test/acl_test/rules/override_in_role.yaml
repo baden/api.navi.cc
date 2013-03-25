@@ -1,0 +1,67 @@
+roles:
+  denied_action:
+    systems:
+      index: {access: deny}
+  denied_all:
+    access: deny
+    $inherit: False
+  denied_controller:
+    systems:
+      $inherit: False
+      access: deny
+
+
+  denied_strange:
+    systems:
+      access: deny
+  taxi:
+    reports:
+      index: {access: allow}
+    systems:
+      index:
+        access: allow
+        allowed_fields: [name, gasoline, speed]
+        filter_by: {object_id: 1}
+      login: {access: allow}
+  repor:
+    reports:
+      access: allow
+      index:
+        access: deny
+rules:
+- $id: uid6
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {repor: 1}
+  type: user
+- $id: uid1
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {taxi: 1}
+  type: user
+- $id: uid2
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {denied_all: 1, taxi: 1}
+  type: user
+- $id: uid3
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {denied_controller: 1, taxi: 1}
+  type: user
+- $id: uid4
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {denied_action: 1, taxi: 1}
+  type: user
+- $id: uid5
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {denied_strange: 1, taxi: 1}
+  type: user

@@ -1,0 +1,62 @@
+roles:
+  base_role:
+    systems:
+      index:
+        access: allow
+        allowed_fields: [name, gasoline, speed]
+        filter_by: {object_id: 1}
+      login: {access: allow}
+  denied_fields:
+    systems:
+      index:
+        denied_fields: [speed]
+  extend_allowed_fields:
+    systems:
+      index:
+        allowed_fields: [voltage]
+  extend_denied_fields:
+    systems:
+      index:
+        denied_fields: [voltage, gasoline]
+  inheritance_global:
+    $inherit: False
+    systems:
+      index:
+        access: allow
+        allowed_fields: [name,speed]
+  inheritance_local:
+    systems:
+      $inherit: False
+      index:
+        access: allow
+        allowed_fields: [satellite]
+  denied_id:
+    systems:
+      index:
+        denied_fields: [_id]
+
+rules:
+- $id: uid1
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {base_role: 1}
+  type: user
+- $id: uid2
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {base_role: 1, extend_allowed_fields: 1}
+  type: user
+- $id: uid3
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {base_role: 1, denied_fields: 1, extend_allowed_fields: 1}
+  type: user
+- $id: uid4
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {base_role: 1, denied_fields: 1, extend_allowed_fields: 1, extend_denied_fields: 1}
+  type: user

@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 from copy import deepcopy
 import logging
-from tornado.httpserver import HTTPRequest
+from types import FunctionType
 
+from tornado.httpserver import HTTPRequest
 from tornado.web import RequestHandler, HTTPError, URLSpec
 import tornado.web
-from types import FunctionType
+
 from application import BaseCollection
-from libraries.logger import log_event
+from configs import Config
+from libraries.acl import RBAC
+from libraries.logger import log_event, LoggerMixin
 from libraries.session import SessionManager
+
 
 __author__ = 'maxaon'
 
@@ -125,17 +129,18 @@ responses = {
 FILTER_INCLUDE = 1
 FILTER_EXCLUDE = 0
 
+
 class RemoveItem(object):
-    '''
+    """
     Empty class for filter functionality. When it rise element is skipped. For filter only
-    '''
+    """
     pass
 
 
 class BaseHandler(RequestHandler):
-    '''
+    """
     Base handler for using in application
-    '''
+    """
 
     def __init__(self, application, request, **kwargs):
         super(BaseHandler, self).__init__(application, request, **kwargs)
@@ -152,11 +157,11 @@ class BaseHandler(RequestHandler):
         return getattr(self, "__session_manager")
 
 
-class ControllerHandler(BaseHandler):
-    '''\
+class ControllerHandler(BaseHandler, LoggerMixin):
+    """\
     Handler for pretty request like /route_regex/:action
     Not implemented fully as I desire
-    '''
+    """
     #: :list: List of string of available action
     __actions__ = None
 
@@ -174,23 +179,71 @@ class ControllerHandler(BaseHandler):
                 raise HTTPError(405)
                 # If XSRF cookies are turned on, reject form submissions without
             # the proper cookie
-            if self.request.method not in ("GET", "HEAD", "OPTIONS") and\
-               self.application.settings.get("xsrf_cookies"):
+            if self.request.method not in ("GET", "HEAD", "OPTIONS") and \
+                    self.application.settings.get("xsrf_cookies"):
                 self.check_xsrf_cookie()
+            action = self.request.method.lower()
+            if not self.isAccessAllowed(action):
+                raise HTTPError(FORBIDDEN)
             self.prepare()
             if not self._finished:
                 args = [self.decode_argument(arg) for arg in args]
                 kwargs = dict((k, self.decode_argument(v, name=k))
-                    for (k, v) in kwargs.iteritems())
-                getattr(self, self.request.method.lower())(*args, **kwargs)
+                              for (k, v) in kwargs.iteritems())
+                getattr(self, action)(*args, **kwargs)
                 if self._auto_finish and not self._finished:
                     self.finish()
         except Exception as e:
             self._handle_request_exception(e)
 
+    def get_rbac(self, company=None):
+        """
+        :rtype : RBAC
+        """
+        if company is None:
+            company = "__main__"
+        compiled_rules = None
+        rbac = None
+        if hasattr(self.application, 'redis'):
+            compiled_rules = self.application.redis.get("acl:" + company)
+            rbac = RBAC(compiled_rules=compiled_rules)
+        if not compiled_rules and company != "__main__":
+            collection = BaseCollection(name='acl')
+            config = collection.find_one({"company": company})
+            if config:
+                rbac = RBAC(config)
+                compiled_rules = rbac.compiled_rules
+            else:
+                self.logger.warning("Company '{}' has not rbac rules".format(company))
+        if not compiled_rules:
+            config = Config.load("rbac.yaml")
+            rbac = RBAC(config)
+            compiled_rules = rbac.compiled_rules
+        return rbac
+
+    @property
+    def rbac(self):
+        if not self.__rbac:
+            company = self.session.get('company')
+            self.__rbac = self.get_rbac(company)
+        return self.__rbac
+
+    @rbac.setter
+    def rbac(self, value):
+        self.__rbac = value
+
+    def isAccessAllowed(self, action, fields=None, controller=None):
+        user_id = self.session.user_id
+        rbac = self.rbac
+        if not controller:
+            controller = self.__class__.__name__
+            if controller.endswith("Controller"):
+                controller = controller[:-10]
+        return rbac.isAllowed(user_id, controller, action, fields)
+
 
 class RestHandler(BaseHandler):
-    '''
+    """
     Handler for REST request.
     Process of execution:
 
@@ -235,7 +288,7 @@ class RestHandler(BaseHandler):
     ======
     If route has key 'id' first parameter is model, founded by this id by function get_model()
     If request params where filtered (using simple filters or by calling filter_<action>()) the second(or first if no id) param is filtered data
-    '''
+    """
 
     simple_filters = {}
     defaults = {
@@ -275,22 +328,23 @@ class RestHandler(BaseHandler):
         for action in filter_settings.values():
             if type(action) == FunctionType:
                 continue
-            if (action == FILTER_INCLUDE or action == FILTER_EXCLUDE):
-                if mode == None:
+            if action == FILTER_INCLUDE or action == FILTER_EXCLUDE:
+                if mode is None:
                     mode = action
                     continue
                 if action != mode:
                     raise ValueError("Multiple modes detected")
-        if mode == None: mode = FILTER_INCLUDE
+        if mode is None:
+            mode = FILTER_INCLUDE
         return mode
 
     def filter_params(self, params, filter_settings):
-        '''
+        """
         Filter data in 'params' using filter_settings
         Format of the filter settings dictionary:
         See class desription
         If filterSetting is empty no filtering provided
-        '''
+        """
         if not filter_settings:
             return params
         mode = self.determinate_mode(filter_settings)
@@ -320,11 +374,11 @@ class RestHandler(BaseHandler):
     #endregion
 
     def get_model(self, id):
-        '''
+        """
         Retrieve model from the `collection` by `id` using self._primary information
         :param id: Primary key
         :return:
-        '''
+        """
         if self.collection:
             return self.collection.find_by_primary(id)
         return None
@@ -339,8 +393,8 @@ class RestHandler(BaseHandler):
                 raise HTTPError(405)
                 # If XSRF cookies are turned on, reject form submissions without
             # the proper cookie
-            if self.request.method not in ("GET", "HEAD", "OPTIONS") and\
-               self.application.settings.get("xsrf_cookies"):
+            if self.request.method not in ("GET", "HEAD", "OPTIONS") and \
+                    self.application.settings.get("xsrf_cookies"):
                 self.check_xsrf_cookie()
             self.prepare()
             if not self._finished:
@@ -356,7 +410,7 @@ class RestHandler(BaseHandler):
                 args = [self.decode_argument(arg) for arg in args]
                 kwargs = dict(self.params(), **kwargs)
                 kwargs = dict((k, self.decode_argument(v, name=k))
-                    for (k, v) in kwargs.iteritems())
+                              for (k, v) in kwargs.iteritems())
 
                 kwargs['data'] = filtered_data
                 if id:
@@ -374,22 +428,26 @@ class RestHandler(BaseHandler):
             self._handle_request_exception(e)
 
     def _get_id_and_action(self, *args, **kwargs):
-        '''
+        """
         Convert request parameters to the id and action
         :param args: Positional variables from the router
         :param kwargs: KW variables from the router
         :return: Return tuple of id and action
         :rtype: (id,action)
-        '''
+        """
         id = kwargs.get('id')
-        if id and id in self._actions_: return None, id
+        if id and id in self._actions_:
+            return None, id
 
         object_action = kwargs.get('action')
-        if object_action and object_action.lower() in self._object_actions_: return id, object_action.lower()
+        if object_action and object_action.lower() in self._object_actions_:
+            return id, object_action.lower()
 
         request_method = self.request.method.lower()
-        if not id and request_method == 'get': return None, 'index'
-        if not id and request_method == 'post': return None, 'post'
+        if not id and request_method == 'get':
+            return None, 'index'
+        if not id and request_method == 'post':
+            return None, 'post'
 
         return id, request_method
 
@@ -429,63 +487,67 @@ class RestHandler(BaseHandler):
         self.write_object(err_msg)
 
     def params(self):
-        '''
+        """
         Return decoded params from the request in normal style (key:value) in dictionary
         :return: All params
-        '''
+        """
         return self._get_params()
 
     def param(self, name, default=None):
-        '''
+        """
         Return parameter identified by `name` from request
         :param name: Name of parameter
         :param default: Default value for parameter
         :return:
-        '''
+        """
         return self._get_params().get(name, default)
 
     def _get_params(self):
-        '''
+        """
         Converts parameter from request to normal representation and decode them.
         :return:
-        '''
+        """
         data = self.request.arguments
         result = {}
         for d in data:
             position = len(data[d]) - 1
-            result[str(d)] = self.decode_argument(data[d][position], name=d)if position >= 0 else None
+            result[str(d)] = self.decode_argument(data[d][position], name=d) if position >= 0 else None
         return result
 
     def add_rest_headers(self):
-        '''
+        """
         Adds headers to response according to the request(Not Implemented)
-        '''
+        """
         self.set_header('Access-Control-Allow-Origin', '*')
         self.set_header('Content-Type', 'application/json; charset=utf-8')
 
     def write_object(self, result):
-        '''
+        """
         Write serialized response object
         :type result: dict, RestResponse
         :param result:
 
-        '''
+        """
         if isinstance(result, RestResponse):
             self.set_status(result.code)
             data = result.data
         else:
             data = result
+
+        self.write(self.dumps(data))
+
+    def dumps(self, data):
         from bson.json_util import dumps
 
-        self.write(dumps(data))
+        return dumps(data)
 
     def filter_response(self, response, **kwargs):
-        '''
+        """
         Filter response object. If response has method 'filter_response' it will be used. In another case simple filters will be used
         :param response: Response object
         :param kwargs:
         :return: Filtered response
-        '''
+        """
         if hasattr(response, 'filter_response'):
             return getattr(response, 'filter_response')(response)
         elif isinstance(response, RestResponse):
@@ -495,9 +557,9 @@ class RestHandler(BaseHandler):
 
 
 class RestResponse(object):
-    '''
+    """
     Container for keeping response code and data in one place
-    '''
+    """
 
     def __init__(self, code=200, data=None):
         self.code = code
@@ -505,9 +567,9 @@ class RestResponse(object):
 
 
 class RestError(HTTPError):
-    '''
+    """
     Exception to be shownt ot the user
-    '''
+    """
 
     def __init__(self, status_code=400, message=None, internal_code=0):
         """
@@ -524,10 +586,10 @@ class RestError(HTTPError):
 
 
 class BaseRouter(object):
-    '''
+    """
     Base representation of router
     Base Path will be appended to each route (Not implemented)
-    '''
+    """
     _routes = []
     basepath = None
 
@@ -555,9 +617,9 @@ class BaseRouter(object):
 
 
 class RestRoute(BaseRouter):
-    '''
+    """
     Routing for rest request
-    '''
+    """
 
     def __init__(self, route=None, initialize=None, name=None, host=".*$", add_basepath=True, defaults=None):
         """
@@ -589,7 +651,8 @@ class RestRoute(BaseRouter):
         """
         name = self.name or handler.__name__
         route = self.route or "/" + name.lower() + "{{id}}{{action}}"
-        if "{{id}}" in route: route = route.replace("{{id}}", self.REGEX_ID)
+        if "{{id}}" in route:
+            route = route.replace("{{id}}", self.REGEX_ID)
         if handler._object_actions_:
             action_regexp = self.REGEX_ACTION.format("|".join(handler._object_actions_))
             if "{{action}}" in route:
@@ -633,9 +696,9 @@ class RestRoute(BaseRouter):
 
 
 class Application(tornado.web.Application):
-    '''
+    """
     Rest application
-    '''
+    """
     logger = logging.getLogger(__name__ + ".Application")
     environment = "production"
 
@@ -643,17 +706,18 @@ class Application(tornado.web.Application):
         self.environment = environment or "production"
         self.settings = settings
 
-        if not handlers: handlers = []
+        if not handlers:
+            handlers = []
         if 'handlers' in settings:
             handlers.extend(settings.pop('handlers'))
         handlers.extend(BaseRouter.getAllRoutes())
         super(Application, self).__init__(handlers, **self.settings)
 
     def bootstrap(self):
-        '''
+        """
         Initialize application(tornado.web.Application)
         :return:
-        '''
+        """
 
         for host, handlers in self.handlers:
             for handler in handlers:
@@ -665,11 +729,11 @@ class Application(tornado.web.Application):
 
     @log_event(logger, message_before="Running application")
     def run(self, **kwargs):
-        '''
+        """
         Run server: start listening and start IOLoop
         :param kwargs: Sended to HTTPServer
         :return:
-        '''
+        """
         from tornado.httpserver import HTTPServer
 
         server = HTTPServer(self, **kwargs)

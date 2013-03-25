@@ -1,0 +1,22 @@
+roles:
+  denied_strange:
+    systems:
+      $inherit: False
+      access: deny
+      login: {access: allow}
+  taxi:
+    reports:
+      index: {access: allow}
+    systems:
+      index:
+        access: allow
+        allowed_fields: [name, gasoline, speed]
+        filter_by: {object_id: 1}
+      login: {access: allow}
+rules:
+- $id: uid1
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {denied_strange: 1, taxi: 1}
+  type: user

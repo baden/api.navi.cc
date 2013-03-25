@@ -1,0 +1,15 @@
+roles:
+  admin:
+    access: allow
+  user:
+    access: allow
+  guest:
+    accounts:
+      login:
+        access: allow
+      post:
+        access: allow
+rules:
+  $guest: guest
+
+

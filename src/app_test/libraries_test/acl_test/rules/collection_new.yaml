@@ -1,0 +1,32 @@
+roles:
+  base_role:
+    somecol:
+      access: allow
+      allowed_fields: [login, age, speed]
+  extended_role:
+    somecol:
+      read:
+        access: allow
+        allowed_fields: [$all]
+  money_restriction:
+    somecol:
+      read:
+        access: allow
+        filter_by:
+          money:
+            $gt: 500
+  age_restriction:
+    somecol:
+      read:
+        access: allow
+        filter_by:
+          age:
+            $gt: 23
+
+rules:
+- $id: uid1
+  filter_by:
+    money:
+      $more: {all: 1}
+  roles: {base_role: 1}
+  type: user

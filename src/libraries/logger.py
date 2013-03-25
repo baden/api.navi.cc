@@ -8,6 +8,7 @@ import inspect
 from functools import wraps
 from types import FunctionType
 
+
 class LoggerMixin(object):
     @property
     def logger(self):
@@ -84,14 +85,17 @@ def log_event(name=None, message_before="Called '{1}' in module {0}",
             #            call_args={}
             #Easy calling of log function
             log = functools.partial(logger.log, level)
-            if message_before:  log(message_before.format(function_module, function_name, **call_args))
+            if message_before:
+                log(message_before.format(function_module, function_name, **call_args))
             if verbose:
                 log("Arguments:")
                 for arg_name in call_args:
                     log("\t{0} : {1}".format(arg_name, call_args[arg_name]))
             return_value = f(*args, **kwargs)
-            if message_after:   log(message_after.format(function_module, function_name, return_value, **call_args))
-            if verbose:         log("\t returned: {}".format(return_value))
+            if message_after:
+                log(message_after.format(function_module, function_name, return_value, **call_args))
+            if verbose:
+                log("\t returned: {}".format(return_value))
             return return_value
 
         return decorator
@@ -123,7 +127,9 @@ class _DecoratedWhitLogger(object):
     def function(self, params):
         return params * 4
 
+
 itercount = 10 ** 4
+
 
 def _testNotDecorated():
     d = _NotDecorated()

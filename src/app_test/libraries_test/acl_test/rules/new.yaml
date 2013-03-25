@@ -1,0 +1,28 @@
+roles:
+  g1:
+    access: allow
+  g2:
+    c2:
+      access: deny
+      a2:
+        access: allow
+      a4:
+        access: allow
+  g3:
+    access: deny
+    c2:
+      a3:
+        access: allow
+  g4:
+    access: allow
+    c2:
+      a3:
+        access: deny
+rules:
+  - type: user
+    $id: test4
+    roles:
+      - g2
+      - g3
+
+

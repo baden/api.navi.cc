@@ -6,14 +6,15 @@ from bson import SON, ObjectId
 import pymongo.database
 from pymongo.collection import Collection
 
+
 class Redis(aaa.Redis):
     pass
 
 
 class Database(pymongo.database.Database):
-    '''
+    """
     MongoDatabase with some sugar
-    '''
+    """
 
     def __init__(self, connection, name):
         super(Database, self).__init__(connection, name)
@@ -23,7 +24,7 @@ class Database(pymongo.database.Database):
 
 
 class BaseCollection(Collection):
-    '''
+    """
     Mongo collection with sugar:
     BaseCollection._db - default database
     _name - name of the collection
@@ -33,7 +34,7 @@ class BaseCollection(Collection):
             "$oid" ObjectID
     _model - model for the collectio. Type = `ActiveRecord` (maybe `SON`)
 
-    '''
+    """
     _db = None
     _name = None
     _primary = {"_id": "$oid"}
@@ -80,8 +81,10 @@ class BaseCollection(Collection):
        """
         if not database:
             database = self.db
-        if name: self._name = name or self._name
-        if model: self._model = model
+        if name:
+            self._name = name or self._name
+        if model:
+            self._model = model
         if self._model:
             #set collection to model for short path
             self._model._collection = self
@@ -90,8 +93,8 @@ class BaseCollection(Collection):
         super(BaseCollection, self).__init__(database, self._name, create, **kwargs)
 
     def find_by_primary(self, data):
-        '''
-        '''
+        """
+        """
         #We have simple case
         if len(self._primary) == 1:
             if isinstance(data, dict):
@@ -209,9 +212,9 @@ class BaseCollection(Collection):
         .. mongodoc:: find
         """
 
-        if "as_class" not in kwargs: kwargs['as_class'] = self._model
+        if "as_class" not in kwargs:
+            kwargs['as_class'] = self._model
         return super(BaseCollection, self).find(*args, **kwargs)
-
 
     def insert(self, doc_or_docs, manipulate=True, safe=None, check_keys=True, continue_on_error=False, **kwargs):
         """Insert a document(s) into this collection.
@@ -292,7 +295,8 @@ class BaseCollection(Collection):
             return_one = True
             docs = [docs]
 
-        docs = [doc if isinstance(doc, ActiveRecord) else self._model(doc) for doc in docs]
+        docs = [doc if isinstance(doc, ActiveRecord) else self._model(doc) if self._model is not None else doc for doc
+                in docs]
 
         ids = super(BaseCollection, self).insert(docs, manipulate, safe, check_keys, continue_on_error, **kwargs)
 
@@ -307,14 +311,14 @@ class BaseCollection(Collection):
 
 
 class ActiveRecord(SON):
-    '''
+    """
 
     Implement
     active
     record
     pattern
     for SON objects.
-    '''
+    """
     _defaults = {}
 
     @property
@@ -327,15 +331,14 @@ class ActiveRecord(SON):
         if not isinstance(col, BaseCollection):
             if not col:
                 raise ValueError("Collection not specified for class '{}'".format(self.__class__.__name__))
-            setattr(self, "_collection", col())
+            setattr(self, "_collection", col)
         col = getattr(self, "_collection")
-        return  col
+        return col
 
     def __init__(self, data=None, **kwargs):
         if 'collection' in kwargs:
             self._collection = kwargs.pop('collection')
         super(ActiveRecord, self).__init__(data, **kwargs)
-
 
     def __getattr__(self, item):
         if item in self.keys():
@@ -344,7 +347,6 @@ class ActiveRecord(SON):
             return self._defaults[item]
         else:
             raise AttributeError
-
 
     def __setattr__(self, key, value):
         if not key.startswith("_"):
@@ -358,8 +360,8 @@ class ActiveRecord(SON):
         return self.__class__.__name__ + "([%s])" % ", ".join(result)
 
     def save(self, manipulate=True, safe=None, check_keys=True, **kwargs):
-        '''
-        """Save current document in this collection.
+        """
+        Save current document in this collection.
 
        If `to_save` already has an ``"_id"`` then an :meth:`update`
        (upsert) operation is performed and any existing document with
@@ -415,13 +417,12 @@ class ActiveRecord(SON):
           arguments.
 
        .. mongodoc:: insert
-       """
-
-        :return:
-        '''
+       :return:
+        """
 
         col = self.collection
         col.save(self, manipulate, safe, check_keys, **kwargs)
+
 
 if __name__ == "__main__":
     pass

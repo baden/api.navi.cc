@@ -1,0 +1,10 @@
+roles:
+  taxi:
+    systems: {access: allow}
+rules:
+- $id: uid1
+  filter_by:
+    devices:
+      $groups: {all: 1}
+  roles: {taxi: 1}
+  type: user

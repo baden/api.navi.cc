@@ -1,0 +1,20 @@
+roles:
+  admins:
+    access: allow
+  taxi:
+    systems:
+      index:
+        access: allow
+        allowed_fields:
+          - name
+          - gasoline
+          - speed
+rules:
+  - type: user
+    $id: uid1
+    roles:
+      taxi: 1
+    filter_by:
+      devices:
+        $groups:
+          all: 1

@@ -1,0 +1,22 @@
+roles:
+  g1:
+    access: allow
+    c1:
+      access: deny
+    c2:
+      access: deny
+    c5:
+      access: allow
+  g2:
+    access: deny
+    c1:
+      access: allow
+    c3:
+      access: deny
+    c4:
+      access: allow
+rules: {}
+
+
+
+

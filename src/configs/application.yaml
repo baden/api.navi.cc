@@ -1,5 +1,5 @@
 production:
-  host: localhost
+  address: 0.0.0.0
   port: 8183
   cookies:
     expires_days: 31

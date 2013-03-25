@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from libraries.logger import log_event
-
 from zmq.eventloop import ioloop
 
+from libraries.logger import log_event
+
 ioloop.install()
-from zmq.eventloop.zmqstream import ZMQStream
-import zmq
 
 __author__ = 'maxaon'
+
 
 class Publisher(object):
     @log_event(message_before="Publisher init. (disabled)", message_after=None)

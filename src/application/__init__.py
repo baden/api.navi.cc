@@ -10,6 +10,7 @@ import libraries.database as database
 
 from .controllers import *
 
+
 class Application(web.Application):
     logger = logging.getLogger(__name__ + ".Application")
 

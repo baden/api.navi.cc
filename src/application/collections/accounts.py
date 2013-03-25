@@ -7,17 +7,17 @@
 #class Account(RestHandler):
 #    def index(self):
 #        return  {"message": "Hello world!"}
-from functools import partial
-import hmac
-from operator import __setitem__
 import random
-from bson import SON
-from libraries.database import BaseCollection, ActiveRecord
 from hashlib import sha1 as sha
+
+from bson import SON
+
+from libraries.database import BaseCollection, ActiveRecord
+
 
 class Account(ActiveRecord):
     _collection = None
-    _defaults = {'username': ''}
+    _defaults = {'username': '', 'roles': ['user']}
 
     def isPasswordCorrect(self, password):
         return Account.hash_password(self.salt, password) == self.password
@@ -44,6 +44,14 @@ class Account(ActiveRecord):
                 self[key] = value
         return self
 
+    def update(self, other=None, **kwargs):
+        if isinstance(other, (dict, SON)):
+            if 'password' in other:
+                salt = Account.gen_salt()
+                other['salt'] = salt
+                other['password'] = Account.hash_password(salt, other["password"])
+        super(Account, self).update(other, **kwargs)
+
 
 def model(m):
     def wrapper(cls):
@@ -61,7 +69,7 @@ class Accounts(BaseCollection):
 
     @classmethod
     def authenticate(cls, login=None, password=None, group=None, email=None):
-        '''
+        """
         Authenticate user by (login or email),password and group
         :param cls: Class
         :param password: Account password
@@ -70,9 +78,11 @@ class Accounts(BaseCollection):
         :param email: Account email
         :return: ``Account`` if authentication is successful othervise  ``False``
         :rtype: Account bool
-        '''
-        if password is None: raise ValueError('Password can\'t be empty')
-        if not login and not email: raise ValueError("Authentication can't be without login or email")
+        """
+        if password is None:
+            raise ValueError('Password can\'t be empty')
+        if not login and not email:
+            raise ValueError("Authentication can't be without login or email")
         self = cls()
         query = {"login": login} if login else {"email": email}
         query.update({"group": group})
