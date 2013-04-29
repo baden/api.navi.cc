@@ -33,8 +33,8 @@ class Account(DBBase):
     def name_pass_to_akey(domain, name, password):
         s = sha.sha()
         s.update(domain)
-        s.update(name)
-        s.update(password)
+        s.update(name.encode('utf-8'))
+        s.update(password.encode('utf-8'))
         s.update(SHA_SALT)
         #return base64.urlsafe_b64encode(domain + ":" + s.hexdigest()).rstrip('=')
         return base64.urlsafe_b64encode(s.digest()).rstrip('=')
