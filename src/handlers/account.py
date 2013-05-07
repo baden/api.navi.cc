@@ -90,7 +90,9 @@ class AccountSystem(BaseHandler):
             results = []
 
             skeys = [System.imei_to_key(imei) for imei in imeis]
+            logging.info(' == keys=%s', repr(skeys))
             systems = System(key=None, cached=True).find_all(skeys, domain=self.domain)
+            logging.info(' == systems=%s', repr(systems))
             pushAll = []
 
             for imei in imeis:
@@ -98,13 +100,13 @@ class AccountSystem(BaseHandler):
                 if skey in self.account.document["skeys"]:
                     results.append({
                         "result": "already"
-                        })
+                    })
                 else:
                     #system = System.get(skey).filter(domain=self.domain)
                     if systems[skey] is None:
                         results.append({
                             "result": "notfound"
-                            })
+                        })
                     else:
                         pushAll.append(skey)
                         results.append({

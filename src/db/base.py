@@ -123,7 +123,7 @@ class DBBase(object):
 
             # Сначала пробуем получить все значения из кеша
             cache = self.redis.mget(('%s.%s' % (prefix, key) for key in keys))
-            #logging.info("  mget result len=%d", len(cache))
+            # logging.info("  mget result len=%d", len(cache))
             misskeys = []
             for i in range(len(keys)):
                 s = cache[i]
@@ -151,7 +151,14 @@ class DBBase(object):
 
         else:
             out = {}
+            logging.info(' self name = %s' % self.name)
+            logging.info(' coll name = %s' % self.collection.name)
+            logging.info('== keys = %s' % repr(keys))
+            # syss = self.collection.find({"_id": {"$in": keys}}).count()
+            syss = self.collection.find({"_id": {"$in": ["dGVzdC0wMQ"]}}).count()
+            logging.info('== syss = %s' % repr(syss))
             for s in self.collection.find({"_id": {"$in": keys}}):
+                logging.info('== s = %s' % repr(s))
                 s["__cache__"] = 'disabled'
                 out[s["_id"]] = s
 

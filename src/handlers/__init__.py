@@ -9,6 +9,7 @@ __all__ = [
     "system",
     "logs",
     "params",
+    "geo",
 ]
 
 #for m in __all__:

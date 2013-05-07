@@ -16,6 +16,7 @@ import hmac
 import base64
 from urlparse import urlparse
 import functools
+from bson import json_util
 
 from db.account import Account
 
@@ -110,7 +111,7 @@ class BaseHandler(RequestHandler):
             if len(payload) > 0:
                 #logging.info('==payload:%s', payload)
                 try:
-                    self.payload = json.loads(payload)
+                    self.payload = json.loads(payload, object_hook=json_util.object_hook)
                 except ValueError:
                     raise HTTPError(400, "Problems parsing JSON")
                 if type(self.payload) != dict:
@@ -188,7 +189,7 @@ class BaseHandler(RequestHandler):
                     },
                     "headers": repr(self.request.headers),
                     "uri": str(self.request.uri),
-                    "full_url": str(self.request.full_url),
+                    # "full_url": str(self.request.full_url),
                     "path": str(self.request.path),
                     "host": str(self.request.host)
                 },
@@ -200,9 +201,9 @@ class BaseHandler(RequestHandler):
             data["meta"] = {
                 "status": self.get_status()
             }
-            self.finish(callback + "(" + json.dumps(data, indent=4) + ");")
+            self.finish(callback + "(" + json.dumps(data, indent=4, default=json_util.default) + ");")
         else:
-            self.finish(json.dumps(data, indent=4))
+            self.finish(json.dumps(data, indent=4, default=json_util.default))
 
     @staticmethod
     def auth(method):

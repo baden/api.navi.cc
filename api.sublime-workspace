@@ -890,7 +890,7 @@
 	"groups":
 	[
 		{
-			"selected": 13,
+			"selected": 9,
 			"sheets":
 			[
 				{
@@ -1236,7 +1236,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3616.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -2046,7 +2046,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2898.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
