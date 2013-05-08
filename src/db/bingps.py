@@ -54,7 +54,8 @@ class BinGPS(DBBase):
                 data += decompress(d)
 
         # Данные из буффера
-        query = bingps.buffer.find({'skey': skey, 'hour': {"$gte": hourfrom, "$lte": hourto}}).sort("_id", 1)
+        # query = bingps.buffer.find({'skey': skey, 'hour': {"$gte": hourfrom, "$lte": hourto}}).sort("_id", 1)
+        query = bingps.buffer.find({'skey': skey, 'hour': {"$gte": hourfrom, "$lte": hourto}}).sort("ts", 1)
         for r in query:
             data += r["data"]
 
