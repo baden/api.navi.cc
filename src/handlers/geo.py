@@ -51,31 +51,31 @@ class GeoGet(BaseHandler):
     def get(self, skey, dtfrom, dtto):
         # System(skey).change_desc(self.payload["desc"], domain=self.domain)
         self.set_header('Content-Type', 'application/octet-stream')
-        def join(blist):
-            j = ""
-            for b in blist:
-                j += b
-            return j
+        # def join(blist):
+        #     j = ""
+        #     for b in blist:
+        #         j += b
+        #     return j
 
         data = BinGPS.getraw(skey, int(dtfrom), int(dtto))
-        logging.info("data = %s" % repr(data))
+        # logging.info("data = %s" % repr(data))
 
         # result = ({"hour": d["hour"], "data": b64encode(join(d["data"]))} for d in data)
 
-        for d in data:
-            self.write(join(d["data"]))
-
+        # for d in data:
+        #     self.write(join(d["data"]))
+        self.write(data)
 
 @Route(BaseHandler.API_PREFIX + r"/geo/hours/(?P<skey>[^\/]+)/(?P<dtfrom>[^\/]+)/(?P<dtto>[^\/]+)")
 class GeoHours(BaseHandler):
     def get(self, skey, dtfrom, dtto):
 
-        data = BinGPS.gethours(skey, int(dtfrom), int(dtto))
+        hours = BinGPS.gethours(skey, int(dtfrom), int(dtto))
         # data = [d for d in BinGPS.gethours(skey, int(dtfrom), int(dtto))]
 
         self.writeasjson({
             "skey": skey,
             "from": dtfrom,
             "to": dtto,
-            "data": data["result"]
+            "hours": hours
         })
