@@ -169,6 +169,7 @@ class DBBase(object):
 
     def reset_cache(self):
         prefix = self.__class__.__name__
+        logging.info('== RESET CACHE = %s.%s' % (repr(prefix), repr(self.key)))
         self.redis.delete('%s.%s' % (prefix, self.key))
 
     def update(self, param):

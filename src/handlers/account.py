@@ -85,14 +85,14 @@ class AccountSystem(BaseHandler):
         elif cmd == 'add':
 
             imeis = self.request.arguments.get("imeis")
-            logging.info(' == imeis=%s', repr(imeis))
+            # logging.info(' == imeis=%s', repr(imeis))
 
             results = []
 
             skeys = [System.imei_to_key(imei) for imei in imeis]
-            logging.info(' == keys=%s', repr(skeys))
+            # logging.info(' == keys=%s', repr(skeys))
             systems = System(key=None, cached=True).find_all(skeys, domain=self.domain)
-            logging.info(' == systems=%s', repr(systems))
+            # logging.info(' == systems=%s', repr(systems))
             pushAll = []
 
             for imei in imeis:
@@ -122,7 +122,7 @@ class AccountSystem(BaseHandler):
         elif cmd == 'sort':
 
             skeys = self.request.arguments.get("skeys", [])
-
+            # logging.info("skeys = %s" % repr(skeys))
             self.account.sort_systems(skeys)
             self.writeasjson({
                 "result": "sorted",

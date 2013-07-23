@@ -128,7 +128,8 @@ class BaseHandler(RequestHandler):
         aes_start = profiler_timer()
 
         hash = hmac.new(self.application.settings["cookie_secret"], digestmod=hashlib.sha1)
-        hash.update(str(self.request.remote_ip))
+        # Привязка к IP показала свою несостоятельность
+        #hash.update(str(self.request.remote_ip))
         hash.update(self.request.headers.get("User-Agent", ""))
         hash.update(self.get_argument('id', ''))
         hash.update(self.domain)
@@ -151,7 +152,7 @@ class BaseHandler(RequestHandler):
         if access_token is not None:
             akey, identity = access_token.split('@')
             if identity == self.identity:
-                #logging.info(' Identity is ok (%s)', identity)
+                logging.info(' Identity is ok (%s)', identity)
                 self.auth = True
                 self.akey = akey
             else:
