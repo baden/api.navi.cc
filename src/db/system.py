@@ -56,6 +56,7 @@ class System(DBBase):
         if domain is not None:
             a["desc"] = a["descbydomain"].get(domain, u"Система %s" % a["imei"])
             del a["descbydomain"]
+        self.dynamic(a)
         return a
 
     def find_all(self, keys, domain=None):
@@ -68,7 +69,15 @@ class System(DBBase):
                 if domain is not None:
                     a["desc"] = a["descbydomain"].get(domain, u"Система %s" % a["imei"])
                     del a["descbydomain"]
+                # logging.info('add dynamic data for %s' % str(a["key"]))
+                self.dynamic(a)
         return systems
+
+    def dynamic(self, system):
+        prefix = self.__class__.__name__ + "_dynamic"
+        key = system["key"]
+        dynamic = self.redis.hgetall('%s.%s' % (prefix, key))
+        system['dynamic'] = dynamic
 
     def change_desc(self, desc, domain=None):
         logging.info(' Change desc (%s, %s, %s)', self.key, desc, domain)
