@@ -22,11 +22,13 @@ class Params(DBBase):
         return r
 
     def all(self):
-        del self.document["_id"]
-        del self.document["__cache__"]
+        # del self.document["_id"]
+        # del self.document["__cache__"]
         result = {}
-        for (k,v) in self.document.iteritems():
-            result[DBBase.fromkey(k)] = v
+        if self.document is not None:
+            for (k,v) in self.document.iteritems():
+                if k not in ["_id", "__cache__"]:
+                    result[DBBase.fromkey(k)] = v
         return result
 
     def add_queue(self, key, value):

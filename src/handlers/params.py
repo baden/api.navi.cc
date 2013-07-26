@@ -2,6 +2,7 @@
 
 from route import Route
 from base import BaseHandler
+from db import sinform
 #from db.account import Account
 #from db.system import System
 #import base64
@@ -48,6 +49,7 @@ class ParamsGet(BaseHandler):
         key = self.request.arguments.get("key", '')
         value = self.request.arguments.get("value", '')
         Params(skey).add_queue(key, value)
+        sinform.sinform_set(skey, "CONFIGUP")
 
     """
         Очистить очередь
@@ -55,6 +57,7 @@ class ParamsGet(BaseHandler):
     @BaseHandler.auth
     def delete(self, skey):
         Params.del_queueall(skey)
+        sinform.sinform_unset(skey, "CONFIGUP")
 
 @Route(BaseHandler.API_PREFIX + r"/params/queue/(?P<skey>[^\/]*)/(?P<key>[^\/]*)")
 class ParamsGet(BaseHandler):
