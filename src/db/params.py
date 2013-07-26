@@ -21,13 +21,31 @@ class Params(DBBase):
             r = None
         return r
 
-    @classmethod
-    def save(cls, skey, object):
-        #logging.info('Params.save(%s, %s)', str(imei), str(object))
-        #logging.info('=== config=%s', str(MONGO_URL))
-        #logging.info('=== db=%s', cls.db)
+    def all(self):
+        del self.document["_id"]
+        del self.document["__cache__"]
+        result = {}
+        for (k,v) in self.document.iteritems():
+            result[DBBase.fromkey(k)] = v
+        return result
 
-        super(Params, cls).save({'save': json.dumps(object)}, key=skey)
+    def add_queue(self, key, value):
+        self.reset_cache()
+        logging.info("Update: %s, %s, %s" % (self.key, key, value))
+        # self.collection.update({"_id": self.key}, {"$push": {"queue": {"key": key, "value": value}}}, True)
+        #self.collection.update({"_id": self.key}, {"$set": {"queue." + DBBase.tokey(key): value}}, True)
+        self.collection.update({"_id": self.key}, {"$set": {DBBase.tokey(key) + ".queue": value}}, True)
+
+    def del_queue(self, key):
+        self.collection.update({"_id": self.key}, {"$unset": {DBBase.tokey(key) + ".queue": ""}})
+
+    # @classmethod
+    # def save(cls, skey, object):
+    #     #logging.info('Params.save(%s, %s)', str(imei), str(object))
+    #     #logging.info('=== config=%s', str(MONGO_URL))
+    #     #logging.info('=== db=%s', cls.db)
+
+    #     super(Params, cls).save({'save': json.dumps(object)}, key=skey)
 
     """
     @classmethod

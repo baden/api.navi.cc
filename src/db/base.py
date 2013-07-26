@@ -75,6 +75,7 @@ class DBBase(object):
         return rep
 
     def find(self, key):
+        logging.info("db.base.find(%s, %s)" % (self.name, key))
         if key is None:
             return None
 
@@ -189,3 +190,11 @@ class DBBase(object):
     def insert(self, document):
         self.document = document
         self.collection.save(self.document)
+
+    @staticmethod
+    def tokey(key):
+        return key.replace(".", "#")
+
+    @staticmethod
+    def fromkey(key):
+        return key.replace("#", ".")
