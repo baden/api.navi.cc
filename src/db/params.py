@@ -22,8 +22,6 @@ class Params(DBBase):
         return r
 
     def all(self):
-        # del self.document["_id"]
-        # del self.document["__cache__"]
         result = {}
         if self.document is not None:
             for (k,v) in self.document.iteritems():
@@ -47,6 +45,5 @@ class Params(DBBase):
             if k not in ["_id", "__cache__"]:
                 if v.has_key("queue"):
                     result[k + ".queue"] = ""
-        # logging.info("unset =%s" % repr(result))
         self.reset_cache()
         self.collection.update({"_id": self.key}, {"$unset": result})
