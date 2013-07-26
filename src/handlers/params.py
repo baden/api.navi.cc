@@ -51,6 +51,12 @@ class ParamsGet(BaseHandler):
         Params(skey).add_queue(key, value)
         sinform.sinform_set(skey, "CONFIGUP")
 
+        msg = {
+            "message": "cfg_upd",
+            "skey": skey
+        }
+        self.application.publisher.send(msg)
+
     """
         Очистить очередь
     """
@@ -58,6 +64,13 @@ class ParamsGet(BaseHandler):
     def delete(self, skey):
         Params.del_queueall(skey)
         sinform.sinform_unset(skey, "CONFIGUP")
+
+        msg = {
+            "message": "cfg_upd",
+            "skey": skey
+        }
+        self.application.publisher.send(msg)
+
 
 @Route(BaseHandler.API_PREFIX + r"/params/queue/(?P<skey>[^\/]*)/(?P<key>[^\/]*)")
 class ParamsGet(BaseHandler):
@@ -67,3 +80,9 @@ class ParamsGet(BaseHandler):
     @BaseHandler.auth
     def delete(self, skey, key):
         Params(skey).del_queue(key)
+
+        msg = {
+            "message": "cfg_upd",
+            "skey": skey
+        }
+        self.application.publisher.send(msg)
