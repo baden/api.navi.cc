@@ -31,21 +31,20 @@ class Params(DBBase):
 
     def add_queue(self, key, value):
         self.reset_cache()
-        # logging.info("Update: %s, %s, %s" % (self.key, key, value))
         self.collection.update({"_id": self.key}, {"$set": {DBBase.tokey(key) + ".queue": value}}, True)
 
     def del_queue(self, key):
+        self.reset_cache()
         self.collection.update({"_id": self.key}, {"$unset": {DBBase.tokey(key) + ".queue": ""}})
 
     @classmethod
     def del_queueall(cls, skey):
-        # all = self.find(self.key)
         self = cls.get(skey)
-        #logging.info("all=%s" % repr(all))
         result = {}
         for (k, v) in self.document.iteritems():
             if k not in ["_id", "__cache__"]:
                 if v.has_key("queue"):
                     result[k + ".queue"] = ""
-        logging.info("unset =%s" % repr(result))
+        # logging.info("unset =%s" % repr(result))
+        self.reset_cache()
         self.collection.update({"_id": self.key}, {"$unset": result})

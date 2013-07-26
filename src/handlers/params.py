@@ -15,13 +15,6 @@ from db.params import Params
 class ParamsGet(BaseHandler):
     @BaseHandler.auth
     def get(self, skey):
-        #value = Params.get(skey)
-        #document = Params.get(skey).document
-        # value = Params.get(skey).from_json()
-        # self.writeasjson({
-        #     "skey": skey,
-        #     "value": value,
-        # })
         value = Params.get(skey).all()
         self.writeasjson({
             "skey": skey,
