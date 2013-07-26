@@ -6,15 +6,19 @@
 
 """
 
-from base import redis
+from base import redispool
+import redis
+# from redis import Redis
+
+r = redis.Redis(connection_pool = redispool)
 
 REDIS_PREFIX = "SINFORM"
 
 def sinform_set(skey, message):
-    redis.sadd('%s.%s' % (REDIS_PREFIX, skey), message)
+    r.sadd('%s.%s' % (REDIS_PREFIX, skey), message)
 
 def sinform_unset(skey, message):
-    redis.srem('%s.%s' % (REDIS_PREFIX, skey), message)
+    r.srem('%s.%s' % (REDIS_PREFIX, skey), message)
 
 def sinform_getall(skey):
-    return redis.smembers('%s.%s' % (REDIS_PREFIX, skey))
+    return r.smembers('%s.%s' % (REDIS_PREFIX, skey))

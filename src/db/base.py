@@ -15,13 +15,17 @@ if sys.platform == "win32":
 else:
     profiler_timer = time.time      # On most other platforms the best timer is time.time()
 
+# if REDIS_HOST is not None:
+redispool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
+
 
 class DBBase(object):
 
     connection = MongoClient(MONGO_URL)     # Single connection for all instanses
     # Use ConnectionPool for Redis connection
-    if REDIS_HOST is not None:
-        redispool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
+    redispool = redispool
+    # if REDIS_HOST is not None:
+    #     redispool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
     db_start = profiler_timer()
     '''
     db = db
