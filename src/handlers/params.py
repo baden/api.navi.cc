@@ -28,7 +28,7 @@ class ParamsGet(BaseHandler):
             "value": value,
         })
 
-@Route(BaseHandler.API_PREFIX + r"/params/(?P<skey>[^\/]*)/(?P<key>[^\/]*)")
+@Route(BaseHandler.API_PREFIX + r"/params/queue/(?P<skey>[^\/]*)")
 class ParamsGet(BaseHandler):
     schema = {}
     schema["POST"] = {
@@ -46,17 +46,28 @@ class ParamsGet(BaseHandler):
         },
         "additionalProperties": True
     }
-    @BaseHandler.auth
-    def post(self, skey, key):
-        #value = Params.get(skey).from_json()
-        _key = self.request.arguments.get("key", '')
-        _value = self.request.arguments.get("value", '')
-        # logging.info('WIP: (%s,%s)' % (_key, _value))
-        Params(skey).add_queue(_key, _value)
 
+    """
+        Отправляет значение в очередь параметров
+    """
+    @BaseHandler.auth
+    def post(self, skey):
+        key = self.request.arguments.get("key", '')
+        value = self.request.arguments.get("value", '')
+        Params(skey).add_queue(key, value)
+
+    """
+        Очистить очередь
+    """
+    @BaseHandler.auth
+    def delete(self, skey):
+        Params.del_queueall(skey)
+
+@Route(BaseHandler.API_PREFIX + r"/params/queue/(?P<skey>[^\/]*)/(?P<key>[^\/]*)")
+class ParamsGet(BaseHandler):
+    """
+        Удалить одно значение из очереди
+    """
     @BaseHandler.auth
     def delete(self, skey, key):
-        #value = Params.get(skey).from_json()
-        # _key = self.request.arguments.get("key", '')
-        # logging.info('WIP: (%s,%s)' % (_key, _value))
         Params(skey).del_queue(key)
