@@ -93,6 +93,20 @@ class System(DBBase):
             }, upsert=True
         )
 
+    def change_params(self, params):
+        logging.info(' Change params (%s, %s)', self.key, params)
+        self.reset_cache()
+        self.collection.update(
+            {
+                "_id": self.key
+            },
+            {
+                "$set": {
+                    "params": params
+                }
+            }, upsert=True
+        )
+
     '''
     def __init__(self, db, redis):
         self.col = db.collection("system")
