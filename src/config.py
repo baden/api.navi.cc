@@ -24,7 +24,8 @@ PUBLISHER_SUB = "ipc:///tmp/ws_sub"
 # Redis URL
 # REDIS_SOCKET_PATH = "/tmp/redis.sock"
 REDIS_SOCKET_PATH = None
-REDIS_HOST = "localhost"
+# REDIS_HOST = "localhost"
+REDIS_HOST = "api.newgps.navi.cc"
 REDIS_PORT = 6379
 REDIS_DB = 0
 
