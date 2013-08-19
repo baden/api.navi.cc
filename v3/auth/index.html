@@ -40,9 +40,11 @@
     <h1 id="section">Авторизация</h1>
 
 <ul id="markdown-toc">
-<li><a href="#section-1">Вход или создание акаунта</a></li>
+  <li><a href="#section-1">Вход или создание акаунта</a></li>
   <li><a href="#section-4">Выход из акаунта</a></li>
-</ul><h2 id="section-1">Вход или создание акаунта</h2>
+</ul>
+
+<h2 id="section-1">Вход или создание акаунта</h2>
 
 <pre><code>GET /login
 </code></pre>
@@ -50,7 +52,7 @@
 <h3 id="section-2">Запрос</h3>
 
 <dl>
-<dt>username</dt>
+  <dt>username</dt>
   <dd>
 <em>Обязательный</em> <strong>string</strong> - Имя пользователя</dd>
   <dt>password</dt>
@@ -62,7 +64,9 @@
   <dt>title</dt>
   <dd>
 <em>Необязательный</em>  <strong>string</strong> - Отображаемое имя</dd>
-</dl><h3 id="section-3">Ответ</h3>
+</dl>
+
+<h3 id="section-3">Ответ</h3>
 
 <pre class="headers"><code>Status: 200 OK</code></pre>
 
@@ -106,6 +110,8 @@
 <pre class="highlight"><code class="language-javascript"><span class="p">{</span>
   <span class="s2">"result"</span><span class="o">:</span> <span class="s2">"logout"</span>
 <span class="p">}</span></code></pre>
+
+
       </div>
 
     <div id="js-sidebar" class="sidebar-shell">
@@ -188,6 +194,15 @@
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/accounts/">Пользователи</a></h3>
             <ul class="js-guides">
               <li><a href="/v3/accounts/systems/">Системы</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/geo/">GEO-данные</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/geo/get/">Получение сырых данных</a></li>
               <!--li><a href="/v3/accounts/emails/">Emails</a></li>
               <li><a href="/v3/accounts/followers/">Followers</a></li>
               <li><a href="/v3/accounts/keys/">Keys</a></li-->

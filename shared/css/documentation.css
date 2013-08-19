@@ -955,4 +955,24 @@ li.api-status img {
   float: left;
   margin: 0 5px 0 0;
 }
+
+/* Tables */
+
+table {
+  border: 1px solid #DDD;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+table>thead>tr>th, table>tbody>tr>th, table>tfoot>tr>th, table>thead>tr>td, table>tbody>tr>td, table>tfoot>tr>td {
+  border: 1px solid #DDD;
+  padding: 6px;
+}
+th {
+  font-weight: bold;
+}
+table>tbody>tr>td {
+  /*text-align: center;*/
+}
+
 /* @end */
+

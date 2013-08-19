@@ -42,7 +42,7 @@
 <p>Это официальный документ для api.navi.cc версии 1.0. Если вы испытываете проблемы или имеете пожелания, пожалуйста свяжитесь с нами по адресу <a href="mailto:baden.i.ua@gmail.com?subject=api.navi.cc_APIv1">support</a>.</p>
 
 <ul id="markdown-toc">
-<li><a href="#section">Схема</a></li>
+  <li><a href="#section">Схема</a></li>
   <li><a href="#section-1">Параметры</a></li>
   <li><a href="#section-2">Ошибки</a></li>
   <li><a href="#http-">HTTP-Методы</a></li>
@@ -51,12 +51,14 @@
   <li><a href="#section-5">Формат основных ресурсов</a></li>
   <li><a href="#cross-origin-resource-sharing">Cross Origin Resource Sharing</a></li>
   <li><a href="#json-p-callbacks">JSON-P Callbacks</a></li>
-</ul><h2 id="section">Схема</h2>
+</ul>
 
-<p>Все запросы начинаются с префикса <code>http://api.newgps.navi.cc/1.0</code>. Далее следует путь к ресурсу. Например, получить события, относящиеся к системе с ключом :skey можно по адресу <code>/logs/get/:skey</code>. Полный путь будет иметь вид:</p>
+<h2 id="section">Схема</h2>
+
+<p>Все запросы начинаются с префикса <code>http://api.newgps.navi.cc/1.0</code>. Далее следует путь к ресурсу. Например, получить события, относящиеся к системе с ключом :skey можно по адресу <code>/logs/:skey</code>. Полный путь будет иметь вид:</p>
 
 <pre class="terminal">
-$ curl http://api.newgps.navi.cc/1.0/logs/get/KEYFORSOMESYSTEM
+$ curl -i http://api.newgps.navi.cc/1.0/logs/KEYFORSOMESYSTEM
 
 HTTP/1.1 200 OK
 Server: nginx
@@ -136,7 +138,7 @@ $ curl -i http://api.newgps.navi.cc/1.0/login -d "username=baden&amp;password=33
 <p>Там где это возможно, используются соответствующие HTTP-методы:</p>
 
 <dl>
-<dt>HEAD</dt>
+  <dt>HEAD</dt>
   <dd>Can be issued against any resource to get just the HTTP header info.</dd>
   <dt>GET</dt>
   <dd>Получение ресурса</dd>
@@ -148,7 +150,9 @@ $ curl -i http://api.newgps.navi.cc/1.0/login -d "username=baden&amp;password=33
   <dd>Замена ресурса</dd>
   <dt>PATCH</dt>
   <dd>Обновления ресурса частичными данными из JSON-запроса.</dd>
-</dl><h2 id="section-3">Авторизация</h2>
+</dl>
+
+<h2 id="section-3">Авторизация</h2>
 
 <p>Для большинства запросов требуется авторизация. После выполнения запроса <code>/login</code> будет возвращен ключ авторизации access_token.</p>
 
@@ -176,25 +180,43 @@ $ curl curl -i "http://api.newgps.navi.cc/1.0/account" -H "Origin: http://some-s
 
 <h2 id="section-5">Формат основных ресурсов</h2>
 
-<h3 id="section-6">Формат базовых полей</h3>
+<h3 id="section-6">Базовые типы</h3>
 
-<ul>
-<li>
-<strong>string</strong> - Строковое значение</li>
-  <li>
-<strong>int</strong> - Целочисленное значение</li>
-  <li>
-<strong>bool</strong> - Значение истина/ложь - true/false</li>
-  <li>
-<strong>datetime</strong> - Метка времени в формате ISO 8601: YYYY-MM-DDTHH:MM:SSZ</li>
-  <li>
-<strong>dt</strong> - Метка времени для данных, требующих особых условий.
-Целочисленное значение. Дата/время указывается в Unux-time формате. Количество секунд, прошедших с полуночи (00:00:00 UTC) 1 января 1970 года (четверг)</li>
-  <li>
-<strong>list</strong> - Список значений</li>
-  <li>
-<strong>dict</strong> - Словарь значений</li>
-</ul><h2 id="cross-origin-resource-sharing">Cross Origin Resource Sharing</h2>
+<dl>
+  <dt>string</dt>
+  <dd>Строковое значение</dd>
+  <dt>number</dt>
+  <dd>Числовое значение, в том числе значение с плавающей точкой.</dd>
+  <dt>integer</dt>
+  <dd>Целочисленное числовое значение</dd>
+  <dt>boolean</dt>
+  <dd>Булевое значение истина/ложь</dd>
+  <dt>object</dt>
+  <dd>Значение тиап объект.</dd>
+  <dt>array</dt>
+  <dd>Список значений. Список как правило содержит элементы одного типа, хотя это и не обязательно.</dd>
+  <dt>null</dt>
+  <dd>Пустое значение. Применяется в случаях, когда необходимо чтобы поле существовало,
+но запись не содержала значения.</dd>
+</dl>
+
+<h3 id="section-7">Специальные типы</h3>
+
+<dl>
+  <dt>datetime</dt>
+  <dd>Подвид типа <strong>string</strong>. Метка времени в формате ISO 8601: “YYYY-MM-DDTHH:MM:SSZ”</dd>
+  <dt>dt</dt>
+  <dd>Подвит типа <strong>integer</strong>. Метка времени для данных, требующих особых условий хранения или передачи.
+Целочисленное значение. Дата/время указывается в Unux-time формате.
+Количество секунд, прошедших с полуночи (00:00:00 UTC) 1 января 1970 года (четверг).</dd>
+  <dt>key</dt>
+  <dd>Подвит типа <strong>string</strong>. Ключ ресурса. Например, список наблюдаемых систем представляет собой
+запись типа <strong>array</strong> со значениями типа <strong>key</strong>.</dd>
+  <dt>any</dt>
+  <dd>Значение может принимать любой тип из приведенных выше.</dd>
+</dl>
+
+<h2 id="cross-origin-resource-sharing">Cross Origin Resource Sharing</h2>
 
 <p>API поддерживает Cross Origin Resource Sharing (CORS) для AJAX запросов.
 Смотри <a href="http://www.w3.org/TR/cors">CORS W3C working draft</a>, или
@@ -259,6 +281,7 @@ foo({
     <span class="p">]</span>
   <span class="p">]</span>
 <span class="p">}</span></code></pre>
+
       </div>
 
     <div id="js-sidebar" class="sidebar-shell">
@@ -341,6 +364,15 @@ foo({
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/accounts/">Пользователи</a></h3>
             <ul class="js-guides">
               <li><a href="/v3/accounts/systems/">Системы</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/geo/">GEO-данные</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/geo/get/">Получение сырых данных</a></li>
               <!--li><a href="/v3/accounts/emails/">Emails</a></li>
               <li><a href="/v3/accounts/followers/">Followers</a></li>
               <li><a href="/v3/accounts/keys/">Keys</a></li-->

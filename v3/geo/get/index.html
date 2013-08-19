@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Language" content="en-us" />
   <meta http-equiv="imagetoolbar" content="false" />
   <meta name="MSSmartTagsPreventParsing" content="true" />
-  <title>Account | api.navi.cc</title>
+  <title></title>
   <link rel="alternate" type="application/atom+xml" title="API Changes" href="/changes.atom" />
   <link href="/css/reset.css" rel="stylesheet" type="text/css" />
   <link href="/css/960.css" rel="stylesheet" type="text/css" />
@@ -37,108 +37,213 @@
 
     <div id="wrapper">
       <div class="content">
-    <h1 id="section">Аккаунт</h1>
+    <h1 id="geo-">GEO-данные</h1>
 
 <ul id="markdown-toc">
-  <li><a href="#section-1">Получение авторизованного аккаунта</a></li>
-  <li><a href="#section-3">Обновление авторизованного аккаунта</a></li>
+  <li><a href="#section">Получение “сырых” данных.</a></li>
 </ul>
 
-<p>Большинство запросов работают с <a href="/v3/#authentication">авторизованным аккаунтом</a>.
-Такие запросы не содержат параметр <code>:akey</code>.</p>
+<h2 id="section">Получение “сырых” данных.</h2>
 
-<h2 id="section-1">Получение авторизованного аккаунта</h2>
-
-<pre><code>GET /account
+<pre><code>GET /geo/get/:skey/:hourfrom/:hourto
 </code></pre>
 
-<h3 id="section-2">Ответ</h3>
+<h3 id="section-1">Ответ</h3>
 
-<pre class="headers"><code>Status: 200 OK</code></pre>
+<pre class="headers"><code>Status: 200 OK
+Content-Type: application/octet-stream</code></pre>
 
-<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"username"</span><span class="o">:</span> <span class="s2">"baden"</span><span class="p">,</span>
-  <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
-  <span class="s2">"domain"</span><span class="o">:</span> <span class="s2">"some_domain"</span><span class="p">,</span>
-  <span class="s2">"created_at"</span><span class="o">:</span> <span class="s2">"2008-01-14T04:33:35Z"</span><span class="p">,</span>
-  <span class="s2">"role"</span><span class="o">:</span> <span class="s2">"user"</span><span class="p">,</span>
-  <span class="s2">"skeys"</span><span class="o">:</span> <span class="p">[</span>
-    <span class="s2">"SKEY1"</span><span class="p">,</span>
-    <span class="s2">"SKEY2"</span>
-  <span class="p">],</span>
-  <span class="s2">"systems"</span><span class="o">:</span> <span class="p">{</span>
-    <span class="s2">"SKEY1"</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"123"</span>
-    <span class="p">},</span>
-    <span class="s2">"SKEY2"</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"124"</span>
-    <span class="p">}</span>
-  <span class="p">},</span>
-  <span class="s2">"akey"</span><span class="o">:</span> <span class="s2">"AKEY1"</span><span class="p">,</span>
-  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
-  <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"NaviCC"</span><span class="p">,</span>
-  <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
-<span class="p">}</span></code></pre>
+<pre class="highlight"><code class="language-javascript"><span class="nx">RAW_BINARY_DATA</span></code></pre>
 
-<h2 id="section-3">Обновление авторизованного аккаунта</h2>
+<h3 id="section-2">Формат данных.</h3>
 
-<pre><code>PATCH /account
-</code></pre>
+<p>Данные представляют собой последовательность пакетов, размером 32 байта каждый.</p>
 
-<h3 id="section-4">Запрос</h3>
+<h4 id="section-3">Общий формат пакета:</h4>
 
-<dl>
-  <dt>title</dt>
-  <dd>
-<em>Optional</em> <strong>string</strong>
-</dd>
-  <dt>email</dt>
-  <dd>
-<em>Optional</em> <strong>string</strong> - Publicly visible email address.</dd>
-  <dt>company</dt>
-  <dd>
-<em>Optional</em> <strong>string</strong>
-</dd>
-  <dt>location</dt>
-  <dd>
-<em>Optional</em> <strong>string</strong>
-</dd>
-</dl>
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Поле</th>
+      <th style="text-align: center">Размер, байт</th>
+      <th style="text-align: left">Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">HEAD</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Заголовок пакета. Всегда имеет значение 0xFF.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ID</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Идентификатор пакета.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DATA</td>
+      <td style="text-align: center">30</td>
+      <td style="text-align: left">Данные пакета.</td>
+    </tr>
+  </tbody>
+</table>
 
-<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
-  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
-  <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"NaviCC"</span><span class="p">,</span>
-  <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
-<span class="p">}</span></code></pre>
+<p>Данные передаваемые двумя или более байтами передаются младшим битом вперед (LSB).</p>
 
-<h3 id="section-5">Ответ</h3>
+<h4 id="id--0xf2----------">ID = 0xF2. Данный пакет устаревший, но используется на большом кол-ве трекеров.</h4>
 
-<pre class="headers"><code>Status: 200 OK</code></pre>
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Поле</th>
+      <th style="text-align: center">Размер, байт</th>
+      <th style="text-align: left">Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">HEAD</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Заголовок пакета. Всегда имеет значение 0xFF.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ID</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Идентификатор пакета. Имеет значение 0xF2</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LEN</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Длина пакета в байтах, включая HEADER, ID и LENGTH. Имеет значение 32</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DAY</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">День месяца = 1..31</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">M_Y</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">месяц | ((год-2010) « 4).   Месяц = 1..12 год = 0..14 → 2010..2024</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">HOUR</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Часы = 0..23</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">MINUTE</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Минуты = 0..59</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">SECOND</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Cекунды = 0..59</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LAT1</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Широта (LL) Градусы широты = 0..89</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LAT2</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Широта (ll) Минуты целая часть = 0..59</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LAT3</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Широта (mm) Минуты дробная часть1 = 0..99</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LAT4</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Широта (nn) Минуты дробная часть2 = 0..99</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LON1</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Долгота (LLL)   Градусы долготы = 0..179</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LON2</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Долгота (ll)    Минуты целая часть = 0..59</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LON3</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Долгота (mm)    Минуты дробная часть1 = 0..99</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LON4</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Долгота (nn)    Минуты дробная часть2 = 0..99</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">EXT</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">бит0 = NS  бит1 = EW  бит2 = (DIR &amp; 1). бит0=0 для N, бит0=1 для S, бит1=0 для E, бит1=1 для W, бит2=0 для четных DIR, бит2=1 для нечетных DIR</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">SATS</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Кол-во спутников 3..12</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">SPEED</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Скорость в узлах 0..239</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">SPEEDF</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Скорость дробная часть  Дробная часть скорости 0..99</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DIR</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Направление/2 = 0..179</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DIRF</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Дробная часть направления 0..99</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">VOUT</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: left">Напряжение внешнего питания, U/100 = 0..2000</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">VIN</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: left">Напряжение внутреннего аккумулятора, U/100 = 0..5000</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">RES1</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Зарезервировано = 0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">FSOURCE</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Тип точки. Причина фиксации точки</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">TDELTA</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: left">Неточное смещение. Смещение относительно точного времени в секундах. Значение 0xFFFF означает превышение лимита и должно игнорироваться если это возможно.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">RES2</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: left">Зарезервировано. Используется для передачи дополнительного значения (фотодатчик, HDOP, уровень топлива)</td>
+    </tr>
+  </tbody>
+</table>
 
-<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"username"</span><span class="o">:</span> <span class="s2">"baden"</span><span class="p">,</span>
-  <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
-  <span class="s2">"domain"</span><span class="o">:</span> <span class="s2">"some_domain"</span><span class="p">,</span>
-  <span class="s2">"created_at"</span><span class="o">:</span> <span class="s2">"2008-01-14T04:33:35Z"</span><span class="p">,</span>
-  <span class="s2">"role"</span><span class="o">:</span> <span class="s2">"user"</span><span class="p">,</span>
-  <span class="s2">"skeys"</span><span class="o">:</span> <span class="p">[</span>
-    <span class="s2">"SKEY1"</span><span class="p">,</span>
-    <span class="s2">"SKEY2"</span>
-  <span class="p">],</span>
-  <span class="s2">"systems"</span><span class="o">:</span> <span class="p">{</span>
-    <span class="s2">"SKEY1"</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"123"</span>
-    <span class="p">},</span>
-    <span class="s2">"SKEY2"</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"124"</span>
-    <span class="p">}</span>
-  <span class="p">},</span>
-  <span class="s2">"akey"</span><span class="o">:</span> <span class="s2">"AKEY1"</span><span class="p">,</span>
-  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
-  <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"NaviCC"</span><span class="p">,</span>
-  <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
-<span class="p">}</span></code></pre>
 
       </div>
 
