@@ -88,7 +88,128 @@ Content-Type: application/octet-stream</code></pre>
   </tbody>
 </table>
 
-<p>Данные передаваемые двумя или более байтами передаются младшим битом вперед (LSB).</p>
+<p>Данные передаваемые двумя или более байтами передаются младшим битом вперед (Little-endian).</p>
+
+<p>На данный момент трекеры, с версией прошивки до 302С включительно, используют пакеты 0xF2. Трекеры с прошивкой после 302C используют пакеты 0xC2.</p>
+
+<h4 id="id--0xc2------">ID = 0xC2. Новые трекеры используют пакеты данного типа.</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Поле</th>
+      <th style="text-align: center">Размер, байт</th>
+      <th style="text-align: left">Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">HEAD</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Заголовок пакета. Всегда имеет значение 0xFF.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ID</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Идентификатор пакета. Имеет значение 0xC2</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">FSOURCE</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Тип точки.   Причина фиксации точки (младшие 6 бит), бит7 - фиксация без активных спутников.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">SATS</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Кол-во спутников 3..12</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DATETIME</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: left">Дата+время (unixtime)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LATITUDE</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: left">Широта 1/10000 минут</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LONGITIDE</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: left">Долгота 1/10000 минут</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">SPEED</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: left">Скорость 1/100 узла</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ALTITUDE</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: left">Высота над уровнем моря, метров (-30000…30000)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DIR</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Направление/2 = 0..179</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">VOUT</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Напряжение внешнего питания 1/10 B  (0.0-102.3) старшие 8 бит.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">VIN</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Напряжение внутреннего аккумулятора 1/100 B   (0.00-10.23) старшие 8 бит</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ADC1</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">АЦП1 (Температура?) старшие 8 бит</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ADC2</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">АЦП2 (Уровень топлива) старшие 8 бит</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ADC_LSB</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Младщие биты полей VOUT, VIN, ADC1, ADC2 (4 x 2 бита)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">RES1</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Резерв  (АЦП3 (Вход 3))</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">RES2</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Резерв  (АЦП1..3lsb (младшие биты: 3 x 2 младших бита))</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">RES3</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Резерв</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">RES4</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Резерв</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">RES5</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Резерв</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LCRC</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Локальная CRC (сумма всех байтов пакета, младший разряд)</td>
+    </tr>
+  </tbody>
+</table>
 
 <h4 id="id--0xf2----------">ID = 0xF2. Данный пакет устаревший, но используется на большом кол-ве трекеров.</h4>
 
@@ -240,6 +361,100 @@ Content-Type: application/octet-stream</code></pre>
       <td style="text-align: center">RES2</td>
       <td style="text-align: center">2</td>
       <td style="text-align: left">Зарезервировано. Используется для передачи дополнительного значения (фотодатчик, HDOP, уровень топлива)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="id--0xc1--------0xc2">ID = 0xC1. Вторая версия пакета. Новые трекеры используют пакеты 0xC2</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Поле</th>
+      <th style="text-align: center">Размер, байт</th>
+      <th style="text-align: left">Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">HEAD</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Заголовок пакета. Всегда имеет значение 0xFF.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ID</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Идентификатор пакета. Имеет значение 0xC1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LEN</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Длина пакета в байтах, включая HEADER, ID и LENGTH. Имеет значение 32</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DATETIME</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: left">Дата+время</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LATITUDE</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: left">Широта 1/10000 минут</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LONGITUDE</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: left">Долгота 1/10000 минут</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">- D6: Скорость 1/100 узла</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: left"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">- D7: Направление/2 = 0..179</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: left"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">- D8: Кол-во спутников 3..12</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: left"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">- D9: Напряжение внешнего питания 1/100 B</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: left"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">- D10: Напряжение внутреннего аккумулятора 1/100 B</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: left"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">- D11: Тип точки   Причина фиксации точки</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: left"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">- D12: Флаги</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: left"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">- D13: Резерв</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: left"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">- D14: Резерв</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: left"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">- D15: Локальная CRC</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: left"> </td>
     </tr>
   </tbody>
 </table>
