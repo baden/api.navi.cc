@@ -71,12 +71,14 @@ class System(DBBase):
                     del a["descbydomain"]
                 # logging.info('add dynamic data for %s' % str(a["key"]))
                 self.dynamic(a)
+                logging.info(' dynamic (%s, %s)', k, a["dynamic"])
         return systems
 
     def dynamic(self, system):
         prefix = self.__class__.__name__ + "_dynamic"
         key = system["key"]
         dynamic = self.redis.hgetall('%s.%s' % (prefix, key))
+        logging.info(' dynamic %s => (%s, %s)', '%s.%s' % (prefix, key), key, dynamic)
         system['dynamic'] = dynamic
 
     def change_desc(self, desc, domain=None):
