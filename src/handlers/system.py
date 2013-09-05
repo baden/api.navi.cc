@@ -30,6 +30,10 @@ class APISystem(BaseHandler):
                 "type": "string",
                 "required": False
             },
+            "icon": {
+                "type": "string",
+                "required": False
+            },
             "params": {
                 "type": "object",
                 "required": False
@@ -47,6 +51,13 @@ class APISystem(BaseHandler):
             self.writeasjson({
                 "skey": skey,
                 "domain": self.domain,
+            })
+        elif "icon" in self.payload:
+            icon = self.payload["icon"]
+            System(skey).patch("icon", icon)
+            self.writeasjson({
+                "skey": skey,
+                "icon": icon,
             })
         elif "params" in self.payload:
             params = self.payload["params"]

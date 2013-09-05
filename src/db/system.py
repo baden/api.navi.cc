@@ -56,7 +56,14 @@ class System(DBBase):
         if domain is not None:
             a["desc"] = a["descbydomain"].get(domain, u"Система %s" % a["imei"])
             del a["descbydomain"]
+        if True:
+            pass
+
         self.dynamic(a)
+
+        if "icon" not in a or isinstance(a["icon"], dict):
+            a["icon"] = "caricon-truck"
+
         return a
 
     def find_all(self, keys, domain=None):
@@ -71,6 +78,10 @@ class System(DBBase):
                     del a["descbydomain"]
                 # logging.info('add dynamic data for %s' % str(a["key"]))
                 self.dynamic(a)
+
+                if "icon" not in a or isinstance(a["icon"], dict):
+                    a["icon"] = "caricon-truck"
+
                 logging.info(' dynamic (%s, %s)', k, a["dynamic"])
         return systems
 
@@ -105,6 +116,20 @@ class System(DBBase):
             {
                 "$set": {
                     "params": params
+                }
+            }, upsert=True
+        )
+
+    def patch(self, key, value):
+        logging.info(' Patch %s (%s, %s)', self.key, key, value)
+        self.reset_cache()
+        self.collection.update(
+            {
+                "_id": self.key
+            },
+            {
+                "$set": {
+                    key: value
                 }
             }, upsert=True
         )
