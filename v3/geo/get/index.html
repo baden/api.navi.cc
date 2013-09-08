@@ -37,7 +37,7 @@
 
     <div id="wrapper">
       <div class="content">
-    <h1 id="geo-">GEO-данные</h1>
+    <h1 id="gps-">GPS аДнные</h1>
 
 <ul id="markdown-toc">
   <li><a href="#section">Получение “сырых” данных.</a></li>
@@ -90,9 +90,9 @@ Content-Type: application/octet-stream</code></pre>
 
 <p>Данные передаваемые двумя или более байтами передаются младшим битом вперед (Little-endian).</p>
 
-<p>Трекеры, с версией прошивки до 302С включительно, используют пакеты 0xF2. Трекеры с прошивкой после 302C используют пакеты 0xC2.</p>
+<p>Трекеры, с версией прошивки до 302С включительно, используют пакеты 0xF2. Трекеры с прошивкой после 302C используют пакеты 0xF5.</p>
 
-<h4 id="id--0xc2------">ID = 0xC2. Новые трекеры используют пакеты данного типа.</h4>
+<h4 id="id--0xf5------">ID = 0xF5. Новые трекеры используют пакеты данного типа.</h4>
 
 <table>
   <thead>
@@ -111,7 +111,7 @@ Content-Type: application/octet-stream</code></pre>
     <tr>
       <td style="text-align: center">ID</td>
       <td style="text-align: center">1</td>
-      <td style="text-align: left">Идентификатор пакета. Имеет значение 0xC2</td>
+      <td style="text-align: left">Идентификатор пакета. Имеет значение 0xF5</td>
     </tr>
     <tr>
       <td style="text-align: center">FSOURCE</td>
@@ -365,7 +365,7 @@ Content-Type: application/octet-stream</code></pre>
   </tbody>
 </table>
 
-<h4 id="id--0xc1----------------0xc2">ID = 0xC1. Вторая версия пакета, тоже устаревшая. Только нексолько трекеров используют эти пакеты. Новые трекеры используют пакеты 0xC2.</h4>
+<h4 id="id--0xf4----------------0xf5">ID = 0xF4. Вторая версия пакета, тоже устаревшая. Только нексолько трекеров используют эти пакеты. Новые трекеры используют пакеты 0xF5.</h4>
 
 <table>
   <thead>
@@ -384,7 +384,7 @@ Content-Type: application/octet-stream</code></pre>
     <tr>
       <td style="text-align: center">ID</td>
       <td style="text-align: center">1</td>
-      <td style="text-align: left">Идентификатор пакета. Имеет значение 0xC1</td>
+      <td style="text-align: left">Идентификатор пакета. Имеет значение 0xF4</td>
     </tr>
     <tr>
       <td style="text-align: center">LEN</td>
