@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Language" content="en-us" />
   <meta http-equiv="imagetoolbar" content="false" />
   <meta name="MSSmartTagsPreventParsing" content="true" />
-  <title></title>
+  <title>Группы пользователей | api.navi.cc</title>
   <link rel="alternate" type="application/atom+xml" title="API Changes" href="/changes.atom" />
   <link href="/css/reset.css" rel="stylesheet" type="text/css" />
   <link href="/css/960.css" rel="stylesheet" type="text/css" />
@@ -37,187 +37,198 @@
 
     <div id="wrapper">
       <div class="content">
-    <h1 id="section">Авторизация</h1>
+    <h1 id="section">Группы пользователей</h1>
 
 <ul id="markdown-toc">
-  <li><a href="#section-1">Авторизация в системе</a></li>
-  <li><a href="#section-5">Создание пользователя</a></li>
-  <li><a href="#section-8">Выход из акаунта</a></li>
+  <li><a href="#section-1">Список групп</a></li>
+  <li><a href="#section-3">Получить группу</a></li>
+  <li><a href="#section-5">Создать группу</a></li>
+  <li><a href="#section-8">Редактировать группу</a></li>
+  <li><a href="#section-11">Удалить группу</a></li>
+  <li><a href="#section-13">Получить список членов группы</a></li>
+  <li><a href="#section-15">Проверить членство пользователя</a></li>
+  <li><a href="#section-18">Добавить пользователя в группу</a></li>
+  <li><a href="#section-20">Удалить пользователя из группы</a></li>
 </ul>
 
-<h2 id="section-1">Авторизация в системе</h2>
+<p>Чтобы иметь доступ к административным ресурсам, необходимо чтобы авторизованый пользователь состоял в группе <code>admin</code>.</p>
 
-<pre><code>POST /auth
+<h2 id="section-1">Список групп</h2>
+
+<pre><code>GET /admin/groups
 </code></pre>
 
-<h3 id="section-2">Запрос</h3>
+<h3 id="section-2">Ответ</h3>
 
-<dl>
-  <dt>grant_type</dt>
-  <dd>
-<em>Обязательный</em> <strong>string</strong> - На данный момент иметь значение <strong>password</strong>.</dd>
-  <dt>username</dt>
-  <dd>
-<em>Обязательный</em> <strong>string</strong> - Имя пользователя</dd>
-  <dt>password</dt>
-  <dd>
-<em>Обязательный</em> <strong>string</strong> - Пароль</dd>
-  <dt>scope</dt>
-  <dd>
-<em>Необязательный</em> <strong>string</strong> - TBD</dd>
-</dl>
+<pre class="headers"><code>Status: 200 OK</code></pre>
 
-<h3 id="section-3">Ответ</h3>
+<pre class="highlight"><code class="language-javascript"><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"http://api.newgps.navi.cc/1.0/admin/groups/groupadminid"</span><span class="p">,</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"groupadminid"</span><span class="p">,</span>
+    <span class="s2">"groupname"</span><span class="o">:</span> <span class="s2">"admin"</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"http://api.newgps.navi.cc/1.0/admin/groups/groupmssid"</span><span class="p">,</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"groupmssid"</span><span class="p">,</span>
+    <span class="s2">"groupname"</span><span class="o">:</span> <span class="s2">"MSS Ukraine"</span>
+  <span class="p">}</span>
+<span class="p">]</span></code></pre>
+
+<h2 id="section-3">Получить группу</h2>
+
+<pre><code>GET /admin/groups/:id
+</code></pre>
+
+<h3 id="section-4">Ответ</h3>
 
 <pre class="headers"><code>Status: 200 OK</code></pre>
 
 <pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"token_type"</span><span class="o">:</span> <span class="s2">"bearer"</span><span class="p">,</span>
-  <span class="s2">"scope"</span><span class="o">:</span> <span class="s2">""</span><span class="p">,</span>
-  <span class="s2">"resource_owner"</span><span class="o">:</span> <span class="s2">"{user,baden}"</span><span class="p">,</span>
-  <span class="s2">"expires_in"</span><span class="o">:</span> <span class="s2">"3600"</span><span class="p">,</span>
-  <span class="s2">"access_token"</span><span class="o">:</span> <span class="s2">"WgkKrRQ24mI2HZaapndgzN25p0J6fCYU"</span>
+  <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"http://api.newgps.navi.cc/1.0/admin/groups/mygroupid"</span><span class="p">,</span>
+  <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"mygroupid"</span><span class="p">,</span>
+  <span class="s2">"groupname"</span><span class="o">:</span> <span class="s2">"My company name"</span><span class="p">,</span>
+  <span class="s2">"permission"</span><span class="o">:</span> <span class="s2">"regular"</span><span class="p">,</span>
+  <span class="s2">"members_count"</span><span class="o">:</span> <span class="mi">3</span>
 <span class="p">}</span></code></pre>
 
-<dl>
-  <dt>access_token</dt>
-  <dd>
-<em>Обязательный</em> <strong>string</strong> - Ключ</dd>
-</dl>
+<h2 id="section-5">Создать группу</h2>
 
-<h3 id="section-4">Пример</h3>
-
-<pre class="terminal">
-$ curl -i -X POST "http://api.newgps.navi.cc/1.0/auth" -H "Origin: http://some-site.com" -d "grant_type=password&amp;username=baden&amp;password=123"
-
-HTTP/1.1 200 OK
-connection: keep-alive
-server: Cowboy
-date: Tue, 10 Sep 2013 09:07:05 GMT
-content-length: 167
-content-type: text/html
-
-{
-    "token_type": "bearer",
-    "scope": "",
-    "resource_owner": "{user,baden}",
-    "expires_in": "3600",
-    "access_token": "szKt3ToQ6mFHlsCgmbC3eJtzdSZP2LLk"
-}
-</pre>
-
-<h2 id="section-5">Создание пользователя</h2>
-
-<pre><code>POST /register
+<pre><code>POST /admin/groups
 </code></pre>
 
 <h3 id="section-6">Запрос</h3>
 
 <dl>
-  <dt>username</dt>
-  <dd>
-<em>Обязательный</em> <strong>string</strong> - Имя пользователя</dd>
-  <dt>password</dt>
-  <dd>
-<em>Обязательный</em> <strong>string</strong> - Пароль</dd>
-  <dt>email</dt>
-  <dd>
-<em>Необязательный</em> <strong>string</strong> - Электронный ящик для процедуры восстановления пароля</dd>
-  <dt>title</dt>
-  <dd>
-<em>Необязательный</em> <strong>string</strong> - Отображаемое имя</dd>
   <dt>groupname</dt>
   <dd>
-<em>Обязательный</em> <strong>string</strong> - Наименование группы пользователей.</dd>
+<em>Обязательный</em> <strong>string</strong> - Имя группы пользователей</dd>
   <dt>grouppassword</dt>
   <dd>
-<em>Обязательный</em> <strong>string</strong> - Проверочное слово для вступление в группу пользователей.</dd>
-  <dt>newgroup</dt>
+<em>Обязательный</em> <strong>string</strong> - Проверочное слово для вступления в группу пользователей</dd>
+  <dt>permission</dt>
   <dd>
-<em>Обязательный</em> <strong>boolean</strong> - Если установлен в значение <code>true</code>, то дополнительно необходимо создать группу с именем groupname.</dd>
+<em>Необязательный</em> <strong>string</strong> - Полномочия группы
+
+    <p><code>regular</code> - Обычная группа пользователей. <strong>Значение по-умолчанию</strong>.</p>
+
+    <p><code>service</code> - Группа поддержки пользователей. Члены данной группы имеет некоторые дополнительные полномочия.</p>
+  </dd>
 </dl>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"groupname"</span><span class="o">:</span> <span class="s2">"mycompany"</span><span class="p">,</span>
+  <span class="s2">"grouppassword"</span><span class="o">:</span> <span class="s2">"1234"</span>
+<span class="p">}</span></code></pre>
 
 <h3 id="section-7">Ответ</h3>
 
+<pre class="headers"><code>Status: 201 Created</code></pre>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
+  <span class="s2">"groupname"</span><span class="o">:</span> <span class="s2">"mycompany"</span><span class="p">,</span>
+  <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"mycompanygroupid"</span><span class="p">,</span>
+  <span class="s2">"permission"</span><span class="o">:</span> <span class="s2">"regular"</span><span class="p">,</span>
+  <span class="s2">"members_count"</span><span class="o">:</span> <span class="mi">0</span>
+<span class="p">}</span></code></pre>
+
+<h2 id="section-8">Редактировать группу</h2>
+
+<pre><code>PATCH /admin/groups/:id
+</code></pre>
+
+<h3 id="section-9">Запрос</h3>
+
+<dl>
+  <dt>groupname</dt>
+  <dd>
+<em>Необязательный</em> <strong>string</strong> - Имя группы пользователей</dd>
+  <dt>grouppassword</dt>
+  <dd>
+<em>Необязательный</em> <strong>string</strong> - Проверочное слово для вступления в группу пользователей</dd>
+  <dt>permission</dt>
+  <dd>
+<em>Необязательный</em> <strong>string</strong> - Полномочия группы</dd>
+</dl>
+
+<h3 id="section-10">Ответ</h3>
+
 <pre class="headers"><code>Status: 200 OK</code></pre>
 
 <pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"username"</span><span class="o">:</span> <span class="s2">"baden"</span>
+  <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"mygroupid"</span><span class="p">,</span>
+  <span class="s2">"groupname"</span><span class="o">:</span> <span class="s2">"My company's new name"</span>
 <span class="p">}</span></code></pre>
 
-<p>Если пользователь с указанным именем уже существует, то будет возвращен ответ:</p>
+<h2 id="section-11">Удалить группу</h2>
 
-<pre class="headers"><code>Status: 409 Conflict</code></pre>
+<pre><code>DELETE /admin/groups/:id
+</code></pre>
 
-<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Validation Failed"</span><span class="p">,</span>
-  <span class="s2">"errors"</span><span class="o">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">"code"</span><span class="o">:</span> <span class="s2">"exist"</span><span class="p">,</span>
-      <span class="s2">"field"</span><span class="o">:</span> <span class="s2">"user"</span><span class="p">,</span>
-      <span class="s2">"resource"</span><span class="o">:</span> <span class="s2">"GroupMember"</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span></code></pre>
+<h3 id="section-12">Ответ</h3>
 
-<p>Если установлен <code>newgroup</code> и группа с указанным наименованием уже существует, то будет возвращен ответ:</p>
+<pre class="headers no-response"><code>Status: 204 No Content</code></pre>
 
-<pre class="headers"><code>Status: 409 Conflict</code></pre>
+<h2 id="section-13">Получить список членов группы</h2>
 
-<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Validation Failed"</span><span class="p">,</span>
-  <span class="s2">"errors"</span><span class="o">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">"code"</span><span class="o">:</span> <span class="s2">"exist"</span><span class="p">,</span>
-      <span class="s2">"field"</span><span class="o">:</span> <span class="s2">"groupname"</span><span class="p">,</span>
-      <span class="s2">"resource"</span><span class="o">:</span> <span class="s2">"Group"</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span></code></pre>
+<pre><code>GET /admin/groups/:id/accounts
+</code></pre>
 
-<p>Если не установлен <code>newgroup</code> и группа с указанным наименованием не существует, то будет возвращен ответ:</p>
+<h3 id="section-14">Ответ</h3>
+
+<pre class="headers"><code>Status: 200 OK</code></pre>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"http://api.newgps.navi.cc/1.0/users/user1"</span><span class="p">,</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user1"</span><span class="p">,</span>
+    <span class="s2">"username"</span><span class="o">:</span> <span class="s2">"baden"</span><span class="p">,</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
+    <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
+    <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"MSS"</span><span class="p">,</span>
+    <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепродзержинск"</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">"url"</span><span class="o">:</span> <span class="s2">"http://api.newgps.navi.cc/1.0/users/user2"</span><span class="p">,</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"user2"</span><span class="p">,</span>
+    <span class="s2">"username"</span><span class="o">:</span> <span class="s2">"alex"</span><span class="p">,</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
+    <span class="s2">"email"</span><span class="o">:</span> <span class="s2">""</span><span class="p">,</span>
+    <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"MSS"</span><span class="p">,</span>
+    <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
+  <span class="p">}</span>
+<span class="p">]</span></code></pre>
+
+<h2 id="section-15">Проверить членство пользователя</h2>
+
+<pre><code>GET /admin/groups/:id/accounts/:user
+</code></pre>
+
+<h3 id="section-16">Ответ если пользователь является членом группы</h3>
+
+<pre class="headers no-response"><code>Status: 204 No Content</code></pre>
+
+<h3 id="section-17">Ответ если пользователь не является членом группы</h3>
 
 <pre class="headers no-response"><code>Status: 404 Not Found</code></pre>
 
-<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Validation Failed"</span><span class="p">,</span>
-  <span class="s2">"errors"</span><span class="o">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">"code"</span><span class="o">:</span> <span class="s2">"notfound"</span><span class="p">,</span>
-      <span class="s2">"field"</span><span class="o">:</span> <span class="s2">"groupname"</span><span class="p">,</span>
-      <span class="s2">"resource"</span><span class="o">:</span> <span class="s2">"Group"</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span></code></pre>
+<h2 id="section-18">Добавить пользователя в группу</h2>
 
-<p>Если не установлен <code>newgroup</code> и не совпало проверочное слово для группы, то будет возвращен ответ:</p>
-
-<pre class="headers"><code>Status: 409 Conflict</code></pre>
-
-<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"message"</span><span class="o">:</span> <span class="s2">"Validation Failed"</span><span class="p">,</span>
-  <span class="s2">"errors"</span><span class="o">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">"code"</span><span class="o">:</span> <span class="s2">"wrongpassword"</span><span class="p">,</span>
-      <span class="s2">"field"</span><span class="o">:</span> <span class="s2">"grouppassword"</span><span class="p">,</span>
-      <span class="s2">"resource"</span><span class="o">:</span> <span class="s2">"Group"</span>
-    <span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span></code></pre>
-
-<h2 id="section-8">Выход из акаунта</h2>
-
-<pre><code>GET /logout
+<pre><code>PUT /admin/groups/:id/accounts/:user
 </code></pre>
 
-<h3 id="section-9">Ответ</h3>
+<h3 id="section-19">Ответ</h3>
 
-<pre class="headers"><code>Status: 200 OK</code></pre>
+<pre class="headers no-response"><code>Status: 204 No Content</code></pre>
 
-<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"result"</span><span class="o">:</span> <span class="s2">"logout"</span>
-<span class="p">}</span></code></pre>
+<h2 id="section-20">Удалить пользователя из группы</h2>
 
+<pre><code>DELETE /admin/groups/:id/accounts/:user
+</code></pre>
+
+<h3 id="section-21">Ответ</h3>
+
+<pre class="headers no-response"><code>Status: 204 No Content</code></pre>
 
       </div>
 

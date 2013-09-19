@@ -40,17 +40,108 @@
     <h1 id="section">Системы авторизованного пользователя</h1>
 
 <ul id="markdown-toc">
-  <li><a href="#section-1">Добавление системы</a></li>
-  <li><a href="#section-4">Изменение порядка наблюдаемых систем</a></li>
-  <li><a href="#section-7">Удаление системы из списка наблюдения</a></li>
+  <li><a href="#section-1">Получение всех наблюдаемых систем</a></li>
+  <li><a href="#section-3">Добавление системы в список наблюдения авторизованного пользователя</a></li>
+  <li><a href="#section-5">Добавление одной или нескольких систем в список наблюдения авторизованного пользователя</a></li>
+  <li><a href="#section-8">Изменение порядка наблюдаемых систем</a></li>
+  <li><a href="#section-11">Удаление системы из списка наблюдения</a></li>
 </ul>
 
-<h2 id="section-1">Добавление системы</h2>
+<h2 id="section-1">Получение всех наблюдаемых систем</h2>
+
+<pre><code>GET /account/systems
+</code></pre>
+
+<h3 id="section-2">Ответ</h3>
+
+<pre class="headers"><code>Status: 200 OK</code></pre>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">"premium"</span><span class="o">:</span> <span class="mi">1357998796</span><span class="p">,</span>
+    <span class="s2">"dynamic"</span><span class="o">:</span> <span class="p">{</span>
+
+    <span class="p">},</span>
+    <span class="s2">"tags"</span><span class="o">:</span> <span class="p">[</span>
+
+    <span class="p">],</span>
+    <span class="s2">"phone"</span><span class="o">:</span> <span class="s2">"+380679332333"</span><span class="p">,</span>
+    <span class="s2">"date"</span><span class="o">:</span> <span class="mi">1357998796</span><span class="p">,</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Без названия"</span><span class="p">,</span>
+    <span class="s2">"icon"</span><span class="o">:</span> <span class="s2">"caricon-truck"</span><span class="p">,</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"sysid1"</span><span class="p">,</span>
+    <span class="s2">"skey"</span><span class="o">:</span> <span class="s2">"SKEY1"</span><span class="p">,</span>
+    <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"IMEI1"</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">"premium"</span><span class="o">:</span> <span class="mi">1357998796</span><span class="p">,</span>
+    <span class="s2">"dynamic"</span><span class="o">:</span> <span class="p">{</span>
+
+    <span class="p">},</span>
+    <span class="s2">"tags"</span><span class="o">:</span> <span class="p">[</span>
+
+    <span class="p">],</span>
+    <span class="s2">"phone"</span><span class="o">:</span> <span class="s2">"+380679332333"</span><span class="p">,</span>
+    <span class="s2">"date"</span><span class="o">:</span> <span class="mi">1357998796</span><span class="p">,</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Без названия"</span><span class="p">,</span>
+    <span class="s2">"icon"</span><span class="o">:</span> <span class="s2">"caricon-truck"</span><span class="p">,</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"sysid2"</span><span class="p">,</span>
+    <span class="s2">"skey"</span><span class="o">:</span> <span class="s2">"SKEY2"</span><span class="p">,</span>
+    <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"IMEI2"</span>
+  <span class="p">}</span>
+<span class="p">]</span></code></pre>
+
+<h2 id="section-3">Добавление системы в список наблюдения авторизованного пользователя</h2>
+
+<pre><code>PUT /account/systems/:imei
+</code></pre>
+
+<h3 id="section-4">Ответ</h3>
+
+<pre class="headers"><code>Status: 201 Created
+Location: http://api.navi.cc/account/systems/*</code></pre>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">"premium"</span><span class="o">:</span> <span class="mi">1357998796</span><span class="p">,</span>
+    <span class="s2">"dynamic"</span><span class="o">:</span> <span class="p">{</span>
+
+    <span class="p">},</span>
+    <span class="s2">"tags"</span><span class="o">:</span> <span class="p">[</span>
+
+    <span class="p">],</span>
+    <span class="s2">"phone"</span><span class="o">:</span> <span class="s2">"+380679332333"</span><span class="p">,</span>
+    <span class="s2">"date"</span><span class="o">:</span> <span class="mi">1357998796</span><span class="p">,</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Без названия"</span><span class="p">,</span>
+    <span class="s2">"icon"</span><span class="o">:</span> <span class="s2">"caricon-truck"</span><span class="p">,</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"sysid1"</span><span class="p">,</span>
+    <span class="s2">"skey"</span><span class="o">:</span> <span class="s2">"SKEY1"</span><span class="p">,</span>
+    <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"IMEI1"</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">"premium"</span><span class="o">:</span> <span class="mi">1357998796</span><span class="p">,</span>
+    <span class="s2">"dynamic"</span><span class="o">:</span> <span class="p">{</span>
+
+    <span class="p">},</span>
+    <span class="s2">"tags"</span><span class="o">:</span> <span class="p">[</span>
+
+    <span class="p">],</span>
+    <span class="s2">"phone"</span><span class="o">:</span> <span class="s2">"+380679332333"</span><span class="p">,</span>
+    <span class="s2">"date"</span><span class="o">:</span> <span class="mi">1357998796</span><span class="p">,</span>
+    <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Без названия"</span><span class="p">,</span>
+    <span class="s2">"icon"</span><span class="o">:</span> <span class="s2">"caricon-truck"</span><span class="p">,</span>
+    <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"sysid2"</span><span class="p">,</span>
+    <span class="s2">"skey"</span><span class="o">:</span> <span class="s2">"SKEY2"</span><span class="p">,</span>
+    <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"IMEI2"</span>
+  <span class="p">}</span>
+<span class="p">]</span></code></pre>
+
+<h2 id="section-5">Добавление одной или нескольких систем в список наблюдения авторизованного пользователя</h2>
 
 <pre><code>POST /account/systems
 </code></pre>
 
-<h3 id="section-2">Запрос</h3>
+<h3 id="section-6">Запрос</h3>
 
 <pre class="highlight"><code class="language-javascript"><span class="p">{</span>
   <span class="s2">"cmd"</span><span class="o">:</span> <span class="s2">"add"</span><span class="p">,</span>
@@ -61,55 +152,18 @@
   <span class="p">]</span>
 <span class="p">}</span></code></pre>
 
-<h3 id="section-3">Ответ</h3>
+<h3 id="section-7">Ответ</h3>
 
-<pre class="headers"><code>Status: 201 Created
-Location: http://api.navi.cc/account/systems/*</code></pre>
+<p>Будет возвращен массив, каждый элемент которого является объектом одного из типов:</p>
 
-<pre class="highlight"><code class="language-javascript"><span class="p">[</span>
-  <span class="p">{</span>
-    <span class="s2">"result"</span><span class="o">:</span> <span class="s2">"added"</span><span class="p">,</span>
-    <span class="s2">"system"</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">"date"</span><span class="o">:</span> <span class="s2">"2008-01-14T04:33:35Z"</span><span class="p">,</span>
-      <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Без названия"</span><span class="p">,</span>
-      <span class="s2">"phone"</span><span class="o">:</span> <span class="s2">"+380679332333"</span><span class="p">,</span>
-      <span class="s2">"icon"</span><span class="o">:</span> <span class="s2">"car"</span><span class="p">,</span>
-      <span class="s2">"tags"</span><span class="o">:</span> <span class="p">[</span>
+<h2 id="section-8">Изменение порядка наблюдаемых систем</h2>
 
-      <span class="p">],</span>
-      <span class="s2">"skey"</span><span class="o">:</span> <span class="s2">"SKEY1"</span><span class="p">,</span>
-      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"IMEI1"</span>
-    <span class="p">}</span>
-  <span class="p">},</span>
-  <span class="p">{</span>
-    <span class="s2">"result"</span><span class="o">:</span> <span class="s2">"added"</span><span class="p">,</span>
-    <span class="s2">"system"</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">"date"</span><span class="o">:</span> <span class="s2">"2008-01-14T04:33:35Z"</span><span class="p">,</span>
-      <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Без названия"</span><span class="p">,</span>
-      <span class="s2">"phone"</span><span class="o">:</span> <span class="s2">"+380679332333"</span><span class="p">,</span>
-      <span class="s2">"icon"</span><span class="o">:</span> <span class="s2">"car"</span><span class="p">,</span>
-      <span class="s2">"tags"</span><span class="o">:</span> <span class="p">[</span>
-
-      <span class="p">],</span>
-      <span class="s2">"skey"</span><span class="o">:</span> <span class="s2">"SKEY2"</span><span class="p">,</span>
-      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"IMEI2"</span>
-    <span class="p">}</span>
-  <span class="p">},</span>
-  <span class="p">{</span>
-    <span class="s2">"result"</span><span class="o">:</span> <span class="s2">"notfound"</span><span class="p">,</span>
-    <span class="s2">"system"</span><span class="o">:</span> <span class="kc">null</span>
-  <span class="p">}</span>
-<span class="p">]</span></code></pre>
-
-<h2 id="section-4">Изменение порядка наблюдаемых систем</h2>
-
-<pre><code>POST /account/systems
+<pre><code>PATCH /account
 </code></pre>
 
-<h3 id="section-5">Запрос</h3>
+<h3 id="section-9">Запрос</h3>
 
 <pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"cmd"</span><span class="o">:</span> <span class="s2">"sort"</span><span class="p">,</span>
   <span class="s2">"skeys"</span><span class="o">:</span> <span class="p">[</span>
     <span class="s2">"SKEY3"</span><span class="p">,</span>
     <span class="s2">"SKEY2"</span><span class="p">,</span>
@@ -117,7 +171,9 @@ Location: http://api.navi.cc/account/systems/*</code></pre>
   <span class="p">]</span>
 <span class="p">}</span></code></pre>
 
-<h3 id="section-6">Ответ</h3>
+<p>Обязательно в списке систем должны быть все те идентификаторы, которые были до этого</p>
+
+<h3 id="section-10">Ответ</h3>
 
 <pre class="headers"><code>Status: 200 OK</code></pre>
 
@@ -129,12 +185,12 @@ Location: http://api.navi.cc/account/systems/*</code></pre>
   <span class="p">]</span>
 <span class="p">}</span></code></pre>
 
-<h2 id="section-7">Удаление системы из списка наблюдения</h2>
+<h2 id="section-11">Удаление системы из списка наблюдения</h2>
 
 <pre><code>DELETE /account/systems/:skey
 </code></pre>
 
-<h3 id="section-8">Ответ</h3>
+<h3 id="section-12">Ответ</h3>
 
 <pre class="headers no-response"><code>Status: 204 No Content</code></pre>
 
@@ -226,6 +282,15 @@ Location: http://api.navi.cc/account/systems/*</code></pre>
             </ul>
           </li>
           <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/systems/">Системы</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/accounts/systems/">Системы</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+          <li class="js-topic">
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/geo/">GEO-данные</a></h3>
             <ul class="js-guides">
               <li><a href="/v3/geo/get/">Получение сырых данных</a></li>
@@ -234,6 +299,32 @@ Location: http://api.navi.cc/account/systems/*</code></pre>
               <li><a href="/v3/accounts/keys/">Keys</a></li-->
             </ul>
           </li>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/admin/">Администрирование</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/admin/groups/">Группы пользователей</a></li>
+              <li><a href="/v3/admin/users/">Пользователи</a></li>
+              <li><a href="/v3/admin/systems/">Системы</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/point/">Получение данных с трекеров</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/point/bingps/">Получение GPS данных</a></li>
+              <li><a href="/v3/point/config/">Конфигурирование</a></li>
+              <li><a href="/v3/point/alarm/">Тревожная кнопка</a></li>
+              <li><a href="/v3/point/fwupdate/">Обновление ПО</a></li>
+              <li><a href="/v3/point/addlog/">События отладки</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+
           <!--li class="js-topic">
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/search/">Search</a></h3>
             <ul class="js-guides">

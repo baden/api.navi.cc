@@ -42,6 +42,7 @@
 <ul id="markdown-toc">
   <li><a href="#section-1">Получение авторизованного аккаунта</a></li>
   <li><a href="#section-3">Обновление авторизованного аккаунта</a></li>
+  <li><a href="#section-6">Получение группы</a></li>
 </ul>
 
 <p>Большинство запросов работают с <a href="/v3/#authentication">авторизованным аккаунтом</a>.
@@ -59,24 +60,17 @@
 <pre class="highlight"><code class="language-javascript"><span class="p">{</span>
   <span class="s2">"username"</span><span class="o">:</span> <span class="s2">"baden"</span><span class="p">,</span>
   <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
-  <span class="s2">"domain"</span><span class="o">:</span> <span class="s2">"some_domain"</span><span class="p">,</span>
-  <span class="s2">"created_at"</span><span class="o">:</span> <span class="s2">"2008-01-14T04:33:35Z"</span><span class="p">,</span>
-  <span class="s2">"role"</span><span class="o">:</span> <span class="s2">"user"</span><span class="p">,</span>
+  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
+  <span class="s2">"date"</span><span class="o">:</span> <span class="mi">1379538213</span><span class="p">,</span>
+  <span class="s2">"groups"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="s2">"admin"</span><span class="p">,</span>
+    <span class="s2">"mss"</span>
+  <span class="p">],</span>
   <span class="s2">"skeys"</span><span class="o">:</span> <span class="p">[</span>
     <span class="s2">"SKEY1"</span><span class="p">,</span>
     <span class="s2">"SKEY2"</span>
   <span class="p">],</span>
-  <span class="s2">"systems"</span><span class="o">:</span> <span class="p">{</span>
-    <span class="s2">"SKEY1"</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"123"</span>
-    <span class="p">},</span>
-    <span class="s2">"SKEY2"</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"124"</span>
-    <span class="p">}</span>
-  <span class="p">},</span>
-  <span class="s2">"akey"</span><span class="o">:</span> <span class="s2">"AKEY1"</span><span class="p">,</span>
-  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
-  <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"NaviCC"</span><span class="p">,</span>
+  <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"accoundid"</span><span class="p">,</span>
   <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
 <span class="p">}</span></code></pre>
 
@@ -94,7 +88,8 @@
 </dd>
   <dt>email</dt>
   <dd>
-<em>Optional</em> <strong>string</strong> - Publicly visible email address.</dd>
+<em>Optional</em> <strong>string</strong>
+</dd>
   <dt>company</dt>
   <dd>
 <em>Optional</em> <strong>string</strong>
@@ -119,26 +114,24 @@
 <pre class="highlight"><code class="language-javascript"><span class="p">{</span>
   <span class="s2">"username"</span><span class="o">:</span> <span class="s2">"baden"</span><span class="p">,</span>
   <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
-  <span class="s2">"domain"</span><span class="o">:</span> <span class="s2">"some_domain"</span><span class="p">,</span>
-  <span class="s2">"created_at"</span><span class="o">:</span> <span class="s2">"2008-01-14T04:33:35Z"</span><span class="p">,</span>
-  <span class="s2">"role"</span><span class="o">:</span> <span class="s2">"user"</span><span class="p">,</span>
+  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
+  <span class="s2">"date"</span><span class="o">:</span> <span class="mi">1379538213</span><span class="p">,</span>
+  <span class="s2">"groups"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="s2">"admin"</span><span class="p">,</span>
+    <span class="s2">"mss"</span>
+  <span class="p">],</span>
   <span class="s2">"skeys"</span><span class="o">:</span> <span class="p">[</span>
     <span class="s2">"SKEY1"</span><span class="p">,</span>
     <span class="s2">"SKEY2"</span>
   <span class="p">],</span>
-  <span class="s2">"systems"</span><span class="o">:</span> <span class="p">{</span>
-    <span class="s2">"SKEY1"</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"123"</span>
-    <span class="p">},</span>
-    <span class="s2">"SKEY2"</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">"imei"</span><span class="o">:</span> <span class="s2">"124"</span>
-    <span class="p">}</span>
-  <span class="p">},</span>
-  <span class="s2">"akey"</span><span class="o">:</span> <span class="s2">"AKEY1"</span><span class="p">,</span>
-  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
-  <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"NaviCC"</span><span class="p">,</span>
+  <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"accoundid"</span><span class="p">,</span>
   <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
 <span class="p">}</span></code></pre>
+
+<h2 id="section-6">Получение группы</h2>
+
+<pre><code>GET /group
+</code></pre>
 
       </div>
 
@@ -228,6 +221,15 @@
             </ul>
           </li>
           <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/systems/">Системы</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/accounts/systems/">Системы</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+          <li class="js-topic">
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/geo/">GEO-данные</a></h3>
             <ul class="js-guides">
               <li><a href="/v3/geo/get/">Получение сырых данных</a></li>
@@ -236,6 +238,32 @@
               <li><a href="/v3/accounts/keys/">Keys</a></li-->
             </ul>
           </li>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/admin/">Администрирование</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/admin/groups/">Группы пользователей</a></li>
+              <li><a href="/v3/admin/users/">Пользователи</a></li>
+              <li><a href="/v3/admin/systems/">Системы</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/point/">Получение данных с трекеров</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/point/bingps/">Получение GPS данных</a></li>
+              <li><a href="/v3/point/config/">Конфигурирование</a></li>
+              <li><a href="/v3/point/alarm/">Тревожная кнопка</a></li>
+              <li><a href="/v3/point/fwupdate/">Обновление ПО</a></li>
+              <li><a href="/v3/point/addlog/">События отладки</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+
           <!--li class="js-topic">
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/search/">Search</a></h3>
             <ul class="js-guides">

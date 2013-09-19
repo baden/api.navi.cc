@@ -459,6 +459,86 @@ Content-Type: application/octet-stream</code></pre>
   </tbody>
 </table>
 
+<h3 id="fsource">Значение FSOURCE.</h3>
+
+<p>Поле <code>FSOURCE</code> определяет причину фиксации точки. Может принимать одно из значений:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Знчение</th>
+      <th style="text-align: left">Описание</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">Фиксация при незапланированной остановке</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">2</td>
+      <td style="text-align: left">Фиксация начала стоянки</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">3</td>
+      <td style="text-align: left">Фиксация при стоянке через установленный интервал</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">4</td>
+      <td style="text-align: left">Фиксация при остановке</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">5</td>
+      <td style="text-align: left">Фиксация при движении через установленный интервал</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">6</td>
+      <td style="text-align: left">Фиксация при начале движения</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">7</td>
+      <td style="text-align: left">Фиксация во время стоянки через установленный интервал</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">8</td>
+      <td style="text-align: left">Фиксация в повороте</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">9</td>
+      <td style="text-align: left">Фиксация при прохождении установленной дистанции (алг1)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">10</td>
+      <td style="text-align: left">Фиксация при прохождении установленной дистанции (алг2)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">11</td>
+      <td style="text-align: left">Фиксация при прохождении установленной дистанции (алг3)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">12</td>
+      <td style="text-align: left">Фиксация по дельте изменения внешнего напряжения</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">13</td>
+      <td style="text-align: left">Фиксация по превышению внешнего напряжения установленного порога</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">14</td>
+      <td style="text-align: left">Неожиданный старт движения. Это признак возможных проблем с акселерометром</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">15</td>
+      <td style="text-align: left">Неожиданное смещение положения. Это признак возможных проблем с акселерометром</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">16</td>
+      <td style="text-align: left">Фиксация точек при первоначальной запитке.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Клиент, встретив первую точку с <code>FSOURCE</code> равным 2, 3 или 7, должен запомнить позицию этой точки и на все время стоянки отображает ее (положение остановки/стоянки).</p>
 
       </div>
 
@@ -548,6 +628,15 @@ Content-Type: application/octet-stream</code></pre>
             </ul>
           </li>
           <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/systems/">Системы</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/accounts/systems/">Системы</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+          <li class="js-topic">
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/geo/">GEO-данные</a></h3>
             <ul class="js-guides">
               <li><a href="/v3/geo/get/">Получение сырых данных</a></li>
@@ -556,6 +645,32 @@ Content-Type: application/octet-stream</code></pre>
               <li><a href="/v3/accounts/keys/">Keys</a></li-->
             </ul>
           </li>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/admin/">Администрирование</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/admin/groups/">Группы пользователей</a></li>
+              <li><a href="/v3/admin/users/">Пользователи</a></li>
+              <li><a href="/v3/admin/systems/">Системы</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/point/">Получение данных с трекеров</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/point/bingps/">Получение GPS данных</a></li>
+              <li><a href="/v3/point/config/">Конфигурирование</a></li>
+              <li><a href="/v3/point/alarm/">Тревожная кнопка</a></li>
+              <li><a href="/v3/point/fwupdate/">Обновление ПО</a></li>
+              <li><a href="/v3/point/addlog/">События отладки</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+
           <!--li class="js-topic">
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/search/">Search</a></h3>
             <ul class="js-guides">

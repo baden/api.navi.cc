@@ -48,9 +48,8 @@
   <li><a href="#http-">HTTP-Методы</a></li>
   <li><a href="#section-3">Авторизация</a></li>
   <li><a href="#user-agent">User Agent</a></li>
-  <li><a href="#section-5">Формат основных ресурсов</a></li>
+  <li><a href="#section-4">Формат основных ресурсов</a></li>
   <li><a href="#cross-origin-resource-sharing">Cross Origin Resource Sharing</a></li>
-  <li><a href="#json-p-callbacks">JSON-P Callbacks</a></li>
 </ul>
 
 <h2 id="section">Схема</h2>
@@ -69,6 +68,8 @@ Status: 200 OK
 ETag: "a00049ba79152d03380c34652f2cb612"
 Content-Length: 5
 Cache-Control: max-age=0, private, must-revalidate
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Origin: *
 
 []
 </pre>
@@ -98,13 +99,13 @@ $ curl -i http://api.newgps.navi.cc/1.0/info?verbose=yes&amp;state=all
 <p>Для POST-запроса, дополнительные параметры задаются в теле запроса. Если тело POST-запроса задано в JSON-формате, то должен быть установлен заголовок <code>Content-Type: application/json; charset=utf-8</code>.</p>
 
 <pre class="terminal">
-$ curl -i -d '{"username":"baden","password":"333"}' http://api.newgps.navi.cc/1.0/login -H "Content-type: application/json;charset=UTF-8" -H "Origin: http://some-site.com"
+$ curl -i -d '{"username":"baden","password":"333"}' http://api.newgps.navi.cc/1.0/login -H "Content-type: application/json; charset=UTF-8" -H "Origin: http://some-site.com"
 </pre>
 
 <p>Если запрос содержит только строковые параметры, то в качестве альтернативы может использоватьcя <code>Content-Type: application/x-www-form-urlencoded</code>, но предпочтение отдается <code>application/json</code>:</p>
 
 <pre class="terminal">
-$ curl -i http://api.newgps.navi.cc/1.0/login -d "username=baden&amp;password=333" -H "Origin: http://some-site.com"
+$ curl -i -X POST http://api.newgps.navi.cc/1.0/auth -d "grant_type=password&amp;username=baden&amp;password=123" -H "Origin: http://some-site.com"
 </pre>
 
 <h2 id="section-2">Ошибки</h2>
@@ -112,13 +113,11 @@ $ curl -i http://api.newgps.navi.cc/1.0/login -d "username=baden&amp;password=33
 <p>Если была попытка выполнения неавторизованного запроса, то будет возвращена ошибка:</p>
 
 <pre><code>    HTTP/1.1 401 Unauthorized
-    Content-Type: application/json; charset=utf-8
-    Content-Length: 68
-
-    {
-            "status_code": 401,
-            "message": "Requires authentication"
-    }
+    Access-Control-Allow-Headers: content-type, if-modified-since, authorization, x-requested-with
+    Access-Control-Allow-Credentials: true
+    Access-Control-Allow-Origin: *
+    www-authenticate: Bearer
+    Content-Length: 0
 </code></pre>
 
 <p>Пример возвращаемой ошибки при ошибке в параметрах:</p>
@@ -139,7 +138,7 @@ $ curl -i http://api.newgps.navi.cc/1.0/login -d "username=baden&amp;password=33
 
 <dl>
   <dt>HEAD</dt>
-  <dd>Can be issued against any resource to get just the HTTP header info.</dd>
+  <dd>Получить только информацию заголовка HTTP.</dd>
   <dt>GET</dt>
   <dd>Получение ресурса</dd>
   <dt>DELETE</dt>
@@ -154,33 +153,33 @@ $ curl -i http://api.newgps.navi.cc/1.0/login -d "username=baden&amp;password=33
 
 <h2 id="section-3">Авторизация</h2>
 
-<p>Для большинства запросов требуется авторизация. После выполнения запроса <code>/login</code> будет возвращен ключ авторизации access_token.</p>
+<p>Для большинства запросов требуется авторизация. После выполнения запроса <code>/auth</code> будет возвращен ключ авторизации access_token.</p>
 
 <p>Доступны три способа авторизации запроса:</p>
 
 <h3 id="accesstoken---">Указание access_token как параметра запроса.</h3>
 
 <pre class="terminal">
-$ curl curl -i "http://api.newgps.navi.cc/1.0/account?access_token=ACCESS_TOKEN" -H "Origin: http://some-site.com"
+$ curl -i "http://api.newgps.navi.cc/1.0/account?access_token=BUtSqeNhjASqlqgakvkzroQRKxt65yum" -H "Origin: http://some-site.com"
 </pre>
 
 <h3 id="accesstoken---authorization">Указание access_token в заголовке Authorization.</h3>
 
 <pre class="terminal">
-$ curl curl -i "http://api.newgps.navi.cc/1.0/account" -H "Origin: http://some-site.com" -H "X-Authorization: ACCESS_TOKEN"
+$ curl -i "http://api.newgps.navi.cc/1.0/account" -H "Origin: http://some-site.com" -H "Authorization: Bearer BUtSqeNhjASqlqgakvkzroQRKxt65yum"
 </pre>
 
-<h3 id="section-4">Использование печенек.</h3>
+<h3 id="cookies">Установка cookies.</h3>
 
-<p>Для запросов, поддерживающих <code>Access-Control-Allow-Credentials: true</code> будут установлены печеньки</p>
+<p>Для запросов, поддерживающих <code>Access-Control-Allow-Credentials: true</code> будут установлены cookies.</p>
 
 <h2 id="user-agent">User Agent</h2>
 
 <p>Все запросы для корректной работы требуют чтобы был установлен <code>User Agent</code>.</p>
 
-<h2 id="section-5">Формат основных ресурсов</h2>
+<h2 id="section-4">Формат основных ресурсов</h2>
 
-<h3 id="section-6">Базовые типы</h3>
+<h3 id="section-5">Базовые типы</h3>
 
 <dl>
   <dt>string</dt>
@@ -200,17 +199,23 @@ $ curl curl -i "http://api.newgps.navi.cc/1.0/account" -H "Origin: http://some-s
 но запись не содержала значения.</dd>
 </dl>
 
-<h3 id="section-7">Специальные типы</h3>
+<h3 id="section-6">Специальные типы</h3>
 
 <dl>
   <dt>datetime</dt>
   <dd>Подвид типа <strong>string</strong>. Метка времени в формате ISO 8601: “YYYY-MM-DDTHH:MM:SSZ”</dd>
   <dt>dt</dt>
-  <dd>Подвит типа <strong>integer</strong>. Метка времени для данных, требующих особых условий хранения или передачи.
+  <dd>Подвид типа <strong>integer</strong>. Метка времени для данных, требующих особых условий хранения или передачи.
 Целочисленное значение. Дата/время указывается в Unux-time формате.
 Количество секунд, прошедших с полуночи (00:00:00 UTC) 1 января 1970 года (четверг).</dd>
+</dl>
+
+<pre class="highlight"><code class="language-javascript">  <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1372700873</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+  <span class="c1">// =&gt; Mon Jul 01 2013 13:47:53 GMT-0400 (EDT)</span></code></pre>
+
+<dl>
   <dt>key</dt>
-  <dd>Подвит типа <strong>string</strong>. Ключ ресурса. Например, список наблюдаемых систем представляет собой
+  <dd>Подвид типа <strong>string</strong>. Ключ ресурса. Например, список наблюдаемых систем представляет собой
 запись типа <strong>array</strong> со значениями типа <strong>key</strong>.</dd>
   <dt>any</dt>
   <dd>Значение может принимать любой тип из приведенных выше.</dd>
@@ -231,56 +236,11 @@ HTTP/1.1 204 No Content
 Access-Control-Allow-Origin: http://some-site.com
 Access-Control-Allow-Credentials: true
 Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE
-Access-Control-Allow-Headers: Authorization
+Access-Control-Allow-Headers: content-type, if-modified-since, authorization, x-requested-with
 ...
 </pre>
 
-<p>На данный момент поддерживаются запросы с любого домена. Домен представляет собой изолированную среду,
-и может использоваться для создания сайта для компании. В которой могут быть свои пользователи, геозоны, маршруты, отчеты и т.п.</p>
-
-<h2 id="json-p-callbacks">JSON-P Callbacks</h2>
-
-<p>Можно указать параметр <code>?callback</code> для любого GET-запроса чтобы обрамить ответ в JSON функцию.</p>
-
-<pre class="terminal">
-$ curl http://api.newgps.navi.cc?callback=foo
-
-foo({
-  "meta": {
-    "status": 200
-  },
-  "data": {
-    // the data
-  }
-})
-</pre>
-
-<p>You can write a javascript handler to process the callback like this:</p>
-
-<pre class="highlight"><code class="language-javascript"><span class="kd">function</span> <span class="nx">foo</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">meta</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">meta</span>
-  <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">meta</span><span class="p">)</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
-<span class="p">}</span></code></pre>
-
-<pre class="highlight"><code class="language-javascript"><span class="p">{</span>
-  <span class="s2">"Link"</span><span class="o">:</span> <span class="p">[</span>
-    <span class="p">[</span>
-      <span class="s2">"url1"</span><span class="p">,</span>
-      <span class="p">{</span>
-        <span class="s2">"rel"</span><span class="o">:</span> <span class="s2">"next"</span>
-      <span class="p">}</span>
-    <span class="p">],</span>
-    <span class="p">[</span>
-      <span class="s2">"url2"</span><span class="p">,</span>
-      <span class="p">{</span>
-        <span class="s2">"rel"</span><span class="o">:</span> <span class="s2">"foo"</span><span class="p">,</span>
-        <span class="s2">"bar"</span><span class="o">:</span> <span class="s2">"baz"</span>
-      <span class="p">}</span>
-    <span class="p">]</span>
-  <span class="p">]</span>
-<span class="p">}</span></code></pre>
+<p>На данный момент поддерживаются запросы с любого домена.</p>
 
       </div>
 
@@ -370,6 +330,15 @@ foo({
             </ul>
           </li>
           <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/systems/">Системы</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/accounts/systems/">Системы</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+          <li class="js-topic">
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/geo/">GEO-данные</a></h3>
             <ul class="js-guides">
               <li><a href="/v3/geo/get/">Получение сырых данных</a></li>
@@ -378,6 +347,32 @@ foo({
               <li><a href="/v3/accounts/keys/">Keys</a></li-->
             </ul>
           </li>
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/admin/">Администрирование</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/admin/groups/">Группы пользователей</a></li>
+              <li><a href="/v3/admin/users/">Пользователи</a></li>
+              <li><a href="/v3/admin/systems/">Системы</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/point/">Получение данных с трекеров</a></h3>
+            <ul class="js-guides">
+              <li><a href="/v3/point/bingps/">Получение GPS данных</a></li>
+              <li><a href="/v3/point/config/">Конфигурирование</a></li>
+              <li><a href="/v3/point/alarm/">Тревожная кнопка</a></li>
+              <li><a href="/v3/point/fwupdate/">Обновление ПО</a></li>
+              <li><a href="/v3/point/addlog/">События отладки</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+
           <!--li class="js-topic">
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/search/">Search</a></h3>
             <ul class="js-guides">
