@@ -90,7 +90,8 @@ Poly=0x1021, Init=0, Revert=false, XorOut=0x0000, Check: CRC(“123456789”)=0x
 <p>В случае успешного приема данных сервер возвращает <code>BINGPS: OK</code>. Сетвер проверяет только контрольную сумму, и если она совпала, то возвращается успешный ответ.</p>
 
 <pre class="headers"><code>Status: 200 OK
-Content-Type: application/octet-stream</code></pre>
+Content-Type: application/octet-stream
+Content-length: 12</code></pre>
 
 <pre class="codeline">
 BINGPS: OK
@@ -99,7 +100,8 @@ BINGPS: OK
 <p>Если контрольная сумма данных не совпала, то будет возвращен ответ:</p>
 
 <pre class="headers"><code>Status: 200 OK
-Content-Type: application/octet-stream</code></pre>
+Content-Type: application/octet-stream
+Content-length: 18</code></pre>
 
 <pre class="codeline">
 BINGPS: CRCERROR

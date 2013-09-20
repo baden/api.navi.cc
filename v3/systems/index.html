@@ -37,20 +37,216 @@
 
     <div id="wrapper">
       <div class="content">
-    <h1 id="section">Системы</h1>
+    <h1 id="section">Системы (трекеры)</h1>
 
 <ul id="markdown-toc">
-  <li><a href="#section-1">Получение системы</a></li>
+  <li><a href="#system">Поля ресурса <code>system</code></a></li>
+  <li><a href="#section-1">Получение списка всех систем</a></li>
+  <li><a href="#section-3">Получение системы</a></li>
 </ul>
 
-<p>Доступ к ресурсу <code>/systems</code> разрешен только если указанная система находится в списке наблюдения авторизованного пользователя.</p>
+<p>Доступ к ресурсу <code>/systems</code> разрешен только если указанная система находится в списке наблюдения авторизованного пользователя. Также ресурс доступен для пользователей, состоящих в группе <code>admin</code>.</p>
 
-<h2 id="section-1">Получение системы</h2>
+<p>Запись системы создается автоматически при первом выходе на связь трекера.</p>
+
+<h2 id="system">Поля ресурса <code>system</code>
+</h2>
+
+<dl>
+  <dt>id</dt>
+  <dd>
+<strong>string</strong> - Идентификатор системы.</dd>
+  <dt>imei</dt>
+  <dd>
+<strong>string</strong> - IMEI GPRS-модуля трекера. По данному полю происходит добавление трекера в список наблюдения.</dd>
+  <dt>phone</dt>
+  <dd>
+<strong>string</strong> - Номер SIM-карты GPRS-модуля трекера. Если SIM-карта оператора содержит в телефонной книге запись собственного номера, то данное поле будет установлено автоматически.</dd>
+  <dt>date</dt>
+  <dd>
+<strong>dt</strong> - Дата регистрации (первого выхода на связь).</dd>
+  <dt>premium</dt>
+  <dd>
+<strong>dt</strong> - Дата окончания премиум-подписки трекера.</dd>
+  <dt>title</dt>
+  <dd>
+<strong>string</strong> - Отображаемое наименование транспортного средства.</dd>
+  <dt>icon</dt>
+  <dd>
+<strong>string</strong> - Значек транспортного средства.</dd>
+  <dt>car</dt>
+  <dd>
+<strong>object</strong> - Информация о транспортном средстве.
+  Может содержать дополнительные записи о транспортном средстве.
+
+    <p>Пример:</p>
+
+    <dl>
+      <dt>number</dt>
+      <dd>
+<strong>string</strong> - Гос номер</dd>
+      <dt>engine</dt>
+      <dd>
+<strong>string</strong> - № двигателя</dd>
+      <dt>vin</dt>
+      <dd>
+<strong>string</strong> - № кузова</dd>
+      <dt>insurance</dt>
+      <dd>
+<strong>string</strong> - Страховой полис</dd>
+      <dt>drivers</dt>
+      <dd>
+<strong>array of string</strong> - Список идентификаторов записей о водителях.</dd>
+    </dl>
+  </dd>
+  <dt>tags</dt>
+  <dd>
+<strong>array of string</strong> - Список ярлыков транспортного средства. По ярлыкам возможна сортировка списка трекеров.</dd>
+  <dt>groups</dt>
+  <dd>
+<strong>array of string</strong> - Список групп пользователей к которым прикреплено транспортное средство.
+  Необходимо чтобы после добавления трекера в список наблюдения пользователем с полномочиями
+  администратора группы, но не состоящим в группе <code>admin</code>,
+  автоматически предлагалось добавление трекера в группу пользователя.</dd>
+  <dt>lock</dt>
+  <dd>
+<strong>boolean</strong> - Если это поле установлено в значение <code>true</code>, то трекер нельзя будет добавить в список наблюдения.
+  Только администратор одной из групп из списка <code>groups</code> может менять значение этого поля.</dd>
+  <dt>public</dt>
+  <dd>
+<strong>boolean</strong> - Если это поле установлено в значение <code>true</code>, то трекер автоматически добавляется всем членам
+  групп из списка <code>groups</code> если при добавлении трекера была нажата кнопка “Трекеры группы”.</dd>
+  <dt>hwid</dt>
+  <dd>
+<strong>string</strong> - Строка модели трекера.</dd>
+  <dt>swid</dt>
+  <dd>
+<strong>string</strong> - Версия программного обеспечения трекера.</dd>
+  <dt>params</dt>
+  <dd>
+<strong>object</strong> - Параметры трекера. Хранит параметры для различных блоков работы с трекером.
+  Сервер не накладывает никаких специальных правил для хранения параметров.
+
+    <p>Пример некоторых параметров:</p>
+
+    <dl>
+      <dt>fuel</dt>
+      <dd>
+<strong>array of object</strong> - Список записей калибровки датчика топлива
+
+        <p>Каждая запись имеет формат:</p>
+
+        <dl>
+          <dt>voltage</dt>
+          <dd>
+<strong>float</strong> - Напряжение в вольтах</dd>
+          <dt>liters</dt>
+          <dd>
+<strong>float</strong> - Уровень топлива в баке</dd>
+        </dl>
+      </dd>
+    </dl>
+  </dd>
+  <dt>dynamic</dt>
+  <dd>
+<strong>object</strong> - <em>Только для чтения</em>. Динамически изменяемые данные.
+  К каждому трекеры прикреплен специальный блок часто изменяемых данных.
+  В этом блоке хранятся данные, которые изменяются при каждом обращении трекера к серверу.
+  Для сохранения данного блока сервер использует оперативную память или базу с негарантированным сохранением,
+  поэтому нужно быть готовым к тому, что данный блок не будет сохранен.
+
+    <p>Перечень параметров (далее под “текущее” подразумевается значение при последнем выходе на связь):</p>
+
+    <dl>
+      <dt>dt</dt>
+      <dd>
+<strong>dt</strong> - Дата/время последнего выхода на связь</dd>
+      <dt>latitude</dt>
+      <dd>
+<em>float</em> - Широта текущего положения</dd>
+      <dt>longitude</dt>
+      <dd>
+<em>float</em> - Долгота текущего положения</dd>
+      <dt>speed</dt>
+      <dd>
+<strong>float</strong> - Текущая скорость</dd>
+      <dt>course</dt>
+      <dd>
+<strong>float</strong> - Текущее направление движения</dd>
+      <dt>altitude</dt>
+      <dd>
+<strong>integer</strong> - Текущая высота над уровнем моря</dd>
+      <dt>sats</dt>
+      <dd>
+<strong>integer</strong> - Число спутников</dd>
+      <dt>vout</dt>
+      <dd>
+<strong>float</strong> - Напряжение основного питания</dd>
+      <dt>vin</dt>
+      <dd>
+<strong>float</strong> - Напряжение резервного питания</dd>
+      <dt>fsource</dt>
+      <dd>
+        <p><strong>integer</strong> - Тип последней точки.</p>
+      </dd>
+      <dt>fuel</dt>
+      <dd>
+<strong>float</strong> - Значение АЦП-входа, к которому подключен датчик топлива</dd>
+      <dt>temp</dt>
+      <dd>
+<strong>float</strong> - Значение АЦП-входа, к которому подключен датчик температуры</dd>
+      <dt>adc1</dt>
+      <dd>
+<strong>float</strong> - Значение АЦП-входа 1</dd>
+      <dt>adc2</dt>
+      <dd>
+<strong>float</strong> - Значение АЦП-входа 2</dd>
+      <dt>csq</dt>
+      <dd>
+<strong>integer</strong> - Уровень сигнала GSM-сети, определяемый формулой (csq * 2 - 113) дБ.</dd>
+      <dt>gps</dt>
+      <dd>
+<strong>float</strong> - Усредненный уровень сигнала спутников.</dd>
+      <dt>in1</dt>
+      <dd>
+<strong>boolean</strong> - Состояние логического входа 1</dd>
+      <dt>in2</dt>
+      <dd>
+<strong>boolean</strong> - Состояние логического входа 2</dd>
+      <dt>in3</dt>
+      <dd>
+<strong>boolean</strong> - Состояние логического входа 3</dd>
+      <dt>out1</dt>
+      <dd>
+<strong>boolean</strong> - Состояние выхода 1</dd>
+      <dt>out2</dt>
+      <dd>
+<strong>boolean</strong> - Состояние выхода 2</dd>
+    </dl>
+  </dd>
+</dl>
+
+<h2 id="section-1">Получение списка всех систем</h2>
+
+<pre><code>GET /systems
+</code></pre>
+
+<h3 id="section-2">Ответ</h3>
+
+<pre class="headers"><code>Status: 200 OK</code></pre>
+
+<pre class="highlight"><code class="language-javascript"><span class="p">[</span>
+  <span class="s2">"simple_system1"</span><span class="p">,</span>
+  <span class="s2">"simple_system2"</span><span class="p">,</span>
+  <span class="s2">"simple_system3"</span>
+<span class="p">]</span></code></pre>
+
+<h2 id="section-3">Получение системы</h2>
 
 <pre><code>GET /systems/:id
 </code></pre>
 
-<h3 id="section-2">Ответ</h3>
+<h3 id="section-4">Ответ</h3>
 
 <pre class="headers"><code>Status: 200 OK</code></pre>
 
