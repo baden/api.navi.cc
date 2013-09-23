@@ -37,9 +37,10 @@
 
     <div id="wrapper">
       <div class="content">
-    <h1 id="section">Аккаунт</h1>
+    <h1 id="section">Аккаунт (пользователь сервиса)</h1>
 
 <ul id="markdown-toc">
+  <li><a href="#account">Поля ресурса <strong>account</strong></a></li>
   <li><a href="#section-1">Получение авторизованного аккаунта</a></li>
   <li><a href="#section-3">Обновление авторизованного аккаунта</a></li>
   <li><a href="#section-6">Получение группы</a></li>
@@ -47,6 +48,37 @@
 
 <p>Большинство запросов работают с <a href="/v3/#authentication">авторизованным аккаунтом</a>.
 Такие запросы не содержат параметр <code>:akey</code>.</p>
+
+<h2 id="account">Поля ресурса <strong>account</strong>
+</h2>
+
+<dl>
+  <dt>id</dt>
+  <dd>
+<strong>string</strong> - Идентификатор пользователя.</dd>
+  <dt>username</dt>
+  <dd>
+<strong>string</strong> - Используемое имя для входа в сервис.</dd>
+  <dt>title</dt>
+  <dd>
+<strong>string</strong> - Отображаемое имя пользователя.</dd>
+  <dt>email</dt>
+  <dd>
+<strong>string</strong> - Адрес электронной почты для отправки отчетов и процедуры восстановления пароля.</dd>
+  <dt>date</dt>
+  <dd>
+<strong>dt</strong> - Дата/время регистрации пользователя.</dd>
+  <dt>groups</dt>
+  <dd>
+<strong>array of string</strong> - Список групп пользователей, членом которых является пользователь.
+  Правка этого поля напрямую запрещена, для вступления в группу, необходимо добывить пользователя
+  в ресурс <code>groups</code>.</dd>
+  <dt>skeys</dt>
+  <dd>
+<strong>array of keys</strong> - Список наблюдаемых систем.
+  Используется исключительно для определения очередности отображения систем. Добавление или удаление
+  систем из списка наблюдения производится через <a href="systems/">соответствующий ресурс</a>.</dd>
+</dl>
 
 <h2 id="section-1">Получение авторизованного аккаунта</h2>
 
@@ -90,7 +122,7 @@
   <dd>
 <em>Optional</em> <strong>string</strong>
 </dd>
-  <dt>company</dt>
+  <dt>groups</dt>
   <dd>
 <em>Optional</em> <strong>string</strong>
 </dd>
@@ -102,9 +134,7 @@
 
 <pre class="highlight"><code class="language-javascript"><span class="p">{</span>
   <span class="s2">"title"</span><span class="o">:</span> <span class="s2">"Денис"</span><span class="p">,</span>
-  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span><span class="p">,</span>
-  <span class="s2">"company"</span><span class="o">:</span> <span class="s2">"NaviCC"</span><span class="p">,</span>
-  <span class="s2">"location"</span><span class="o">:</span> <span class="s2">"Днепропетровск"</span>
+  <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"denis@batrak.com"</span>
 <span class="p">}</span></code></pre>
 
 <h3 id="section-5">Ответ</h3>
@@ -223,7 +253,7 @@
           <li class="js-topic">
             <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/systems/">Системы</a></h3>
             <ul class="js-guides">
-              <li><a href="/v3/accounts/systems/">Системы</a></li>
+              <li><a href="/v3/systems/params/">Параметры</a></li>
               <!--li><a href="/v3/accounts/emails/">Emails</a></li>
               <li><a href="/v3/accounts/followers/">Followers</a></li>
               <li><a href="/v3/accounts/keys/">Keys</a></li-->
@@ -257,6 +287,16 @@
               <li><a href="/v3/point/config/">Конфигурирование</a></li>
               <li><a href="/v3/point/alarm/">Тревожная кнопка</a></li>
               <li><a href="/v3/point/fwupdate/">Обновление ПО</a></li>
+              <li><a href="/v3/point/addlog/">События отладки</a></li>
+              <!--li><a href="/v3/accounts/emails/">Emails</a></li>
+              <li><a href="/v3/accounts/followers/">Followers</a></li>
+              <li><a href="/v3/accounts/keys/">Keys</a></li-->
+            </ul>
+          </li>
+
+          <li class="js-topic">
+            <h3><a href="#" class="js-expand-btn collapsed">&nbsp;</a><a href="/v3/websocket/">Обновление ресурсов</a></h3>
+            <ul class="js-guides">
               <li><a href="/v3/point/addlog/">События отладки</a></li>
               <!--li><a href="/v3/accounts/emails/">Emails</a></li>
               <li><a href="/v3/accounts/followers/">Followers</a></li>
